@@ -56,9 +56,28 @@
       if (error) throw error;
       return data;
     },
-    async updateProfileName(userId, name) {
-      const { error } = await requireClient().from("profiles").update({ display_name: name }).eq("id", userId);
-      if (error) throw error;
+    async updateProfile({ userId, name, image }) {
+      const api = requireClient();
+      let avatarUrl = null;
+      let uploadedPath = null;
+      if (image) {
+        const extension = image.name.split(".").pop().toLowerCase();
+        uploadedPath = `${userId}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await api.storage.from("post-images").upload(uploadedPath, image, { contentType: image.type, upsert: false });
+        if (uploadError) throw uploadError;
+        avatarUrl = api.storage.from("post-images").getPublicUrl(uploadedPath).data.publicUrl;
+      }
+      const updates = { display_name: name };
+      if (avatarUrl) updates.avatar_url = avatarUrl;
+      const { error } = await api.from("profiles").update(updates).eq("id", userId);
+      if (error) {
+        if (uploadedPath) {
+          const { error: cleanupError } = await api.storage.from("post-images").remove([uploadedPath]);
+          if (cleanupError) console.error("Unable to clean up the uploaded profile image.", cleanupError);
+        }
+        throw error;
+      }
+      return avatarUrl;
     },
     async getPosts({ followingOnly = false } = {}) {
       const api = requireClient();
@@ -75,6 +94,43 @@
       }
       const { data, error } = await query;
       if (error) throw error;
+      return data;
+    },
+    async getStories() {
+      const { data, error } = await requireClient().from("stories")
+        .select("id, author_id, body, image_url, created_at, expires_at, profiles:profiles!stories_author_id_fkey(id, display_name, handle, avatar_url)")
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+    async publishStory({ body, image }) {
+      const api = requireClient();
+      const { data: authData, error: authError } = await api.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("Conectează-te înainte să publici o poveste.");
+      let imageUrl = null;
+      let uploadedPath = null;
+      if (image) {
+        const extension = image.name.split(".").pop().toLowerCase();
+        uploadedPath = `${authData.user.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await api.storage.from("post-images").upload(uploadedPath, image, { contentType: image.type, upsert: false });
+        if (uploadError) throw uploadError;
+        imageUrl = api.storage.from("post-images").getPublicUrl(uploadedPath).data.publicUrl;
+      }
+      const { data, error } = await api.from("stories").insert({
+        author_id: authData.user.id,
+        body,
+        image_url: imageUrl
+      }).select().single();
+      if (error) {
+        if (uploadedPath) {
+          const { error: cleanupError } = await api.storage.from("post-images").remove([uploadedPath]);
+          if (cleanupError) console.error("Unable to clean up the uploaded story image.", cleanupError);
+        }
+        throw error;
+      }
       return data;
     },
     async publishPost({ body, image }) {
@@ -175,7 +231,7 @@
       return data.map((row) => row.followed);
     },
     async searchProfiles(value) {
-      const { data, error } = await requireClient().from("profiles").select("id, display_name, handle").ilike("handle", `%${value.replace(/^@/, "")}%`).limit(10);
+      const { data, error } = await requireClient().from("profiles").select("id, display_name, handle, avatar_url").ilike("handle", `%${value.replace(/^@/, "")}%`).limit(10);
       if (error) throw error;
       return data;
     },

@@ -57,8 +57,6 @@
           <span class="brand-name">the wall<span class="brand-period">.</span></span>
         </a>
         <button class="nav-item desktop-settings-top" id="open-settings" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg><span data-i18n="settings">Setări</span></button>
-        <button class="rail-toggle" id="rail-toggle" aria-label="Minimize menu" aria-expanded="true"><svg class="icon"><use href="#i-chevron-right"/></svg></button>
-
         <button class="profile-switch" id="profile-switch" type="button" aria-label="Profile">
           <span class="avatar avatar-you">G</span>
           <span class="profile-copy"><strong id="sidebar-name">Guest</strong><small class="hidden" id="sidebar-handle"></small></span>
@@ -84,15 +82,13 @@
             <span class="brand-name">the wall<span class="brand-period">.</span></span>
           </div>
           <div class="page-heading"><span class="eyebrow" data-i18n="mondayNote">LUNI, 19 OCTOMBRIE</span><h1 id="page-title" data-i18n="goodMorning">Bună dimineața <span>☀️</span></h1></div>
-          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="search-input" type="search" placeholder="Caută pe The Wall..." aria-label="Search"/><kbd>⌘ K</kbd></label>
+          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="search-input" type="search" placeholder="Caută pe The Wall..." aria-label="Search"/></label>
           <button class="icon-button mobile-settings" id="open-settings-mobile" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg></button>
         </header>
 
         <section class="stories-section">
-          <div class="section-title"><div><span class="eyebrow" data-i18n="littleMoments">MOMENTE MICI</span><h2 data-i18n="stories">Poveștile tale</h2></div><button class="text-button" data-i18n="seeAll">Vezi toate <svg class="icon"><use href="#i-arrow"/></svg></button></div>
-          <div class="stories">
-            <button class="story story-add" id="add-story"><span class="story-ring"><span class="avatar avatar-you">M</span><span class="story-add-icon"><svg class="icon"><use href="#i-plus"/></svg></span></span><span data-i18n="yourStory">Povestea ta</span></button>
-          </div>
+          <div class="section-title"><div><span class="eyebrow" data-i18n="littleMoments">MOMENTE MICI</span><h2 data-i18n="stories">Poveștile tale</h2></div><button class="text-button" id="see-all-stories" data-i18n="seeAll">Vezi toate <svg class="icon"><use href="#i-arrow"/></svg></button></div>
+          <div class="stories" id="stories-list"></div>
         </section>
 
         <section class="feed-section">
@@ -133,10 +129,8 @@
 
         <section class="side-section">
           <div class="side-heading"><div><span class="eyebrow" data-i18n="happening">SE ÎNTÂMPLĂ</span><h3 data-i18n="trending">În conversație</h3></div><button class="dots-button" aria-label="More trends"><svg class="icon"><use href="#i-more"/></svg></button></div>
-          <a class="trend-item" href="#"><span class="trend-number">01</span><span><strong>#slowmornings</strong><small data-i18n="postsToday">1.2k postări azi</small></span><span class="trend-arrow">↗</span></a>
-          <a class="trend-item" href="#"><span class="trend-number">02</span><span><strong>#littlewins</strong><small data-i18n="peopleTalking">Oameni vorbesc despre asta</small></span><span class="trend-arrow">↗</span></a>
-          <a class="trend-item" href="#"><span class="trend-number">03</span><span><strong>#creativeprocess</strong><small data-i18n="postsToday2">846 postări azi</small></span><span class="trend-arrow">↗</span></a>
-          <button class="show-more" data-i18n="seeWhatsNew">Vezi ce mai e nou <svg class="icon"><use href="#i-arrow"/></svg></button>
+          <div id="trend-list" aria-live="polite"></div>
+          <button class="show-more" id="show-all-trends" data-i18n="seeWhatsNew">Vezi ce mai e nou <svg class="icon"><use href="#i-arrow"/></svg></button>
         </section>
 
         <section class="side-section people-section">

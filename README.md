@@ -10,6 +10,7 @@ Open `index.html` in a browser or serve this directory with a local static web s
 
 1. Create a Supabase project.
 2. In the Supabase SQL Editor, run [`supabase/schema.sql`](./supabase/schema.sql). It creates the tables, row-level security policies, notification triggers, image bucket, and Realtime publication entry used by the app.
+   If your project already has the previous schema, run [`supabase/migrations/20261020_stories.sql`](./supabase/migrations/20261020_stories.sql) in the SQL Editor to add story storage and policies without recreating existing tables.
 3. Copy the project's **Project URL** and **publishable key** (or legacy `anon` key) into [`config.js`](./config.js):
 
    ```js
@@ -32,6 +33,8 @@ The app does not have access to your Supabase project or mail provider. Real sig
 - Responsive feed, search, comments, reactions, saved posts, follows, and a followed-posts feed
 - Email/password account flows managed by Supabase Auth, including email confirmation and password reset
 - Social notifications for new followers, followed-user posts, comments, and `@mentions`
+- Image/text stories that expire after 24 hours, and trending hashtags/counts calculated from recent posts
+- Full-screen blurred settings for account details, profile photos, appearance, and language
 - JPEG, PNG, WebP, and GIF post image uploads up to 10 MB
 - Romanian, English, Spanish, French, German, Italian, Portuguese, and Japanese interface translations; system language is selected by default
 - Light, dark, and system appearance options in a monochrome palette

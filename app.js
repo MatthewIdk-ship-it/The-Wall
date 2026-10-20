@@ -41,6 +41,65 @@ const translations = {
   }
 };
 
+const featureTranslations = {
+  ro: {
+    settingsTitle: "Setările tale",
+    settingsCopy: "Personalizează-ți contul și spațiul The Wall.",
+    accountTab: "Cont",
+    appearanceTab: "Aspect",
+    languageTab: "Limbă",
+    accountCopy: "Editează numele afișat și fotografia de profil.",
+    displayName: "Nume afișat",
+    profilePhoto: "Fotografie de profil",
+    saveProfile: "Salvează profilul",
+    profileSaved: "Profilul a fost actualizat.",
+    profileSaveError: "Nu am putut actualiza profilul.",
+    signInToEditProfile: "Conectează-te ca să-ți editezi profilul.",
+    currentHandle: "Nume de utilizator",
+    addStory: "Adaugă o poveste",
+    storyTextLabel: "Textul poveștii",
+    storyTextPlaceholder: "Ce vrei să împărtășești?",
+    storyImageLabel: "Fotografie (opțional)",
+    storyEmpty: "Adaugă text sau o fotografie pentru poveste.",
+    storyPublished: "Povestea ta va fi vizibilă timp de 24 de ore.",
+    storyUploadError: "Nu am putut publica povestea. Încearcă din nou.",
+    storyPrevious: "Înapoi",
+    storyNext: "Următoarea",
+    noStories: "Nu există povești active acum.",
+    storyMigrationRequired: "Aplică migrarea Supabase pentru povești înainte să le folosești.",
+    trendingEmpty: "Postările recente nu conțin hashtaguri încă.",
+    postsCount: "{count} postări"
+  },
+  en: {
+    settingsTitle: "Your settings",
+    settingsCopy: "Personalize your account and your space on The Wall.",
+    accountTab: "Account",
+    appearanceTab: "Appearance",
+    languageTab: "Language",
+    accountCopy: "Update your display name and profile photo.",
+    displayName: "Display name",
+    profilePhoto: "Profile photo",
+    saveProfile: "Save profile",
+    profileSaved: "Your profile has been updated.",
+    profileSaveError: "We couldn't update your profile.",
+    signInToEditProfile: "Sign in to edit your profile.",
+    currentHandle: "Username",
+    addStory: "Add a story",
+    storyTextLabel: "Story text",
+    storyTextPlaceholder: "What would you like to share?",
+    storyImageLabel: "Photo (optional)",
+    storyEmpty: "Add text or a photo to your story.",
+    storyPublished: "Your story will be visible for 24 hours.",
+    storyUploadError: "We couldn't publish your story. Please try again.",
+    storyPrevious: "Previous",
+    storyNext: "Next",
+    noStories: "There are no active stories yet.",
+    storyMigrationRequired: "Apply the Supabase stories migration before using stories.",
+    trendingEmpty: "Recent posts don't contain hashtags yet.",
+    postsCount: "{count} posts"
+  }
+};
+
 const additionalTranslations = {
   ro: { navFriends: "Prieteni", friendsTitle: "Prietenii tăi", friendsPrompt: "Adaugă persoane pe care le cunoști.", addFriend: "Adaugă un prieten", addFriendsTitle: "Adaugă un prieten", addFriendsCopy: "Introdu numele și numele de utilizator.", friendName: "Numele prietenului", friendHandle: "Numele de utilizator", saveFriend: "Adaugă în listă", noFriends: "Lista ta e goală deocamdată.", noFriendsCopy: "Caută un cont după numele de utilizator.", friendAdded: "Te-ai abonat la acest cont.", friendRemoved: "Abonarea a fost anulată.", duplicateFriend: "Acest nume de utilizator este deja în lista ta.", ownFriend: "Nu te poți adăuga pe tine.", systemLanguage: "Limba sistemului", friendsDemoNote: "Caută conturile reale The Wall folosind numele lor de utilizator.", removeFriend: "Elimină prietenul", addPhoto: "Adaugă o fotografie", mentionHint: "Folosește @ pentru a menționa.", authConfigMissing: "Autentificarea nu este configurată. Completează URL-ul și cheia publică Supabase în config.js și aplică schema bazei de date.", authBackendWarning: "Conturile și parolele sunt verificate securizat de Supabase. Confirmarea și resetarea parolei se trimit prin e-mail.", invalidEmail: "Introdu o adresă de e-mail validă.", invalidCredentials: "E-mailul sau parola nu sunt corecte.", passwordMismatch: "Parolele nu coincid.", shortPassword: "Parola trebuie să aibă cel puțin 8 caractere.", checkEmail: "Verifică-ți e-mailul pentru linkul de confirmare.", resetPassword: "Ai uitat parola? Trimite un link de resetare.", resetSent: "Dacă adresa este înregistrată, vei primi un link de resetare.", authError: "Nu te-am putut conecta. Verifică datele și încearcă din nou.", registerError: "Nu am putut crea contul. Verifică datele și încearcă din nou.", saveError: "Nu am putut salva modificarea. Încearcă din nou.", imageOnly: "Alege un fișier imagine JPEG, PNG, WebP sau GIF.", imageTooLarge: "Imaginea trebuie să aibă cel mult 10 MB.", removeImage: "Elimină imaginea", subscribe: "Abonează-te", subscribed: "Abonat", unfollowed: "Abonarea a fost anulată.", notificationFollow: "a început să te urmărească.", notificationPost: "a publicat o postare nouă.", notificationComment: "a comentat la postarea ta.", notificationMention: "te-a menționat.", noNotifications: "Nu ai notificări noi.", notificationsLive: "Aici apar noii abonați, postările lor, comentariile și mențiunile.", savePost: "Salvează", unsave: "Elimină salvarea", postImage: "Imagine dintr-o postare", followingTitle: "Abonările tale", logOut: "Deconectare", username: "Nume de utilizator", confirmPassword: "Confirmă parola", resetTitle: "Resetează parola", resetCopy: "Îți trimitem un link securizat pe e-mail.", sendReset: "Trimite linkul", profileNotFound: "Nu am găsit un cont cu acest nume de utilizator.", justNow: "acum", minutesAgo: "min în urmă", hoursAgo: "h în urmă", loginSuccess: "Te-ai conectat.", signOutSuccess: "Te-ai deconectat." },
   en: { navFriends: "Friends", friendsTitle: "Your friends", friendsPrompt: "Add people you know.", addFriend: "Add a friend", addFriendsTitle: "Add a friend", addFriendsCopy: "Search for an account by username.", friendName: "Friend's name", friendHandle: "Username", saveFriend: "Follow account", noFriends: "No accounts found.", noFriendsCopy: "Search for a real account by username.", friendAdded: "You're now following this account.", friendRemoved: "You unfollowed this account.", duplicateFriend: "That username is already on your list.", ownFriend: "You can't add yourself.", systemLanguage: "System language", friendsDemoNote: "Search real The Wall accounts by their username.", removeFriend: "Unfollow", addPhoto: "Add a photo", mentionHint: "Use @ to mention someone.", authConfigMissing: "Authentication is not configured. Add your Supabase URL and public key in config.js and apply the database schema.", authBackendWarning: "Supabase securely verifies accounts and passwords. Confirmation and password reset are sent by email.", invalidEmail: "Enter a valid email address.", invalidCredentials: "The email or password is incorrect.", passwordMismatch: "The passwords do not match.", shortPassword: "Password must be at least 8 characters.", checkEmail: "Check your email for a confirmation link.", resetPassword: "Forgot password? Send a reset link.", resetSent: "If that address has an account, a reset link will arrive by email.", authError: "We couldn't sign you in. Check your details and try again.", registerError: "We couldn't create your account. Check your details and try again.", saveError: "We couldn't save that change. Please try again.", imageOnly: "Choose a JPEG, PNG, WebP, or GIF image.", imageTooLarge: "Images must be 10 MB or smaller.", removeImage: "Remove image", subscribe: "Follow", subscribed: "Following", unfollowed: "You unfollowed this account.", notificationFollow: "started following you.", notificationPost: "published a new post.", notificationComment: "commented on your post.", notificationMention: "mentioned you.", noNotifications: "You're all caught up.", notificationsLive: "New followers, their posts, comments, and mentions show up here.", savePost: "Save", unsave: "Remove saved post", postImage: "Image attached to post", followingTitle: "Following", logOut: "Sign out", username: "Username", confirmPassword: "Confirm password", resetTitle: "Reset your password", resetCopy: "We'll email you a secure password reset link.", sendReset: "Send reset link", profileNotFound: "We couldn't find an account with that username.", justNow: "now", minutesAgo: "m ago", hoursAgo: "h ago", loginSuccess: "You're signed in.", signOutSuccess: "You've signed out." },
@@ -88,6 +147,7 @@ try {
 state.name = defaults.name;
 state.handle = defaults.handle;
 let posts = loadPosts();
+let stories = [];
 let friends = loadFriends();
 let currentUser = null;
 let currentProfile = null;
@@ -97,14 +157,18 @@ let notificationCount = 0;
 let notificationChannelCleanup = null;
 let selectedImage = null;
 let imagePreviewUrl = null;
+let selectedStoryImage = null;
 let mentionRequest = 0;
 let refreshGeneration = 0;
+let currentStoryIndex = 0;
+let showAllTrends = false;
+let storySchemaWarningShown = false;
 let activeView = "home";
 let toastTimer;
 
 function t(key) {
   const language = activeLanguageCode();
-  const value = translations[language]?.[key] ?? additionalTranslations[language]?.[key] ?? authTranslations[language]?.[key] ?? translations.en[key] ?? additionalTranslations.en[key] ?? authTranslations.en[key] ?? key;
+  const value = translations[language]?.[key] ?? additionalTranslations[language]?.[key] ?? authTranslations[language]?.[key] ?? featureTranslations[language]?.[key] ?? translations.en[key] ?? additionalTranslations.en[key] ?? authTranslations.en[key] ?? featureTranslations.en[key] ?? key;
   return key === "goodMorning" ? value.replace(" <span>☀️</span>", "") : value;
 }
 
@@ -188,6 +252,7 @@ function applyLanguage() {
   updateNotificationBadge();
   updateAccountButton();
   renderPosts();
+  renderStories();
   updateViewTitle();
 }
 
@@ -198,7 +263,15 @@ function updateIdentityUI() {
   handle.textContent = state.handle;
   handle.classList.toggle("hidden", !state.handle);
   document.querySelectorAll(".avatar-you").forEach((avatar) => {
-    avatar.textContent = initials;
+    avatar.replaceChildren();
+    if (currentProfile?.avatar_url) {
+      const image = document.createElement("img");
+      image.src = currentProfile.avatar_url;
+      image.alt = "";
+      avatar.append(image);
+    } else {
+      avatar.textContent = initials;
+    }
   });
 }
 
@@ -208,7 +281,152 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function avatarMarkup(name, className, avatarUrl = null) {
+  const content = avatarUrl
+    ? `<img src="${escapeHtml(avatarUrl)}" alt="" loading="lazy"/>`
+    : escapeHtml(String(name || "G").slice(0, 1).toUpperCase());
+  return `<span class="avatar ${escapeHtml(className)}">${content}</span>`;
+}
+
+function renderTrends() {
+  const list = document.getElementById("trend-list");
+  if (!list) return;
+  const counts = new Map();
+  for (const post of posts) {
+    const tags = new Set([...post.body.matchAll(/#([\p{L}\p{N}_]+)/gu)].map((match) => match[1].toLocaleLowerCase()));
+    for (const tag of tags) counts.set(tag, (counts.get(tag) || 0) + 1);
+  }
+  const trends = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], activeLanguageCode()));
+  const showMore = document.getElementById("show-all-trends");
+  showMore.classList.toggle("hidden", trends.length <= 3);
+  if (!trends.length) {
+    list.innerHTML = `<p class="trend-empty">${t("trendingEmpty")}</p>`;
+    return;
+  }
+  const visible = showAllTrends ? trends : trends.slice(0, 3);
+  list.innerHTML = visible.map(([tag, count], index) => `<button class="trend-item" type="button" data-trend-tag="#${escapeHtml(tag)}"><span class="trend-number">${String(index + 1).padStart(2, "0")}</span><span><strong>#${escapeHtml(tag)}</strong><small>${escapeHtml(t("postsCount").replace("{count}", new Intl.NumberFormat(activeLanguageCode()).format(count)))}</small></span><span class="trend-arrow">↗</span></button>`).join("");
+}
+
+function renderStories() {
+  const container = document.getElementById("stories-list");
+  if (!container) return;
+  const addStory = `<button class="story story-add" id="add-story" type="button"><span class="story-ring">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<span class="story-add-icon">${icon("plus")}</span></span><span>${t("yourStory")}</span></button>`;
+  const storyItems = stories.map((story, index) => {
+    const image = story.imageUrl
+      ? `<img src="${escapeHtml(story.imageUrl)}" alt="" loading="lazy"/>`
+      : avatarMarkup(story.authorName, "friend-avatar", story.avatarUrl);
+    return `<button class="story" type="button" data-story-index="${index}" aria-label="${escapeHtml(story.authorName)}: ${escapeHtml(story.body || t("storyTextLabel"))}"><span class="story-ring">${image}</span><span>${escapeHtml(story.authorName)}</span></button>`;
+  }).join("");
+  container.innerHTML = `${addStory}${storyItems}`;
+  document.getElementById("see-all-stories").classList.toggle("hidden", stories.length < 2);
+}
+
+function mapRemoteStory(row) {
+  const author = row.profiles || {};
+  return {
+    id: row.id,
+    authorId: row.author_id,
+    authorName: author.display_name || t("profile"),
+    avatarUrl: author.avatar_url,
+    handle: `@${author.handle || "user"}`,
+    body: row.body || "",
+    imageUrl: row.image_url,
+    createdAt: row.created_at,
+    expiresAt: row.expires_at
+  };
+}
+
+function renderStoryViewer() {
+  const story = stories[currentStoryIndex];
+  if (!story) return closeModal();
+  const image = story.imageUrl
+    ? `<img class="story-viewer-image" src="${escapeHtml(story.imageUrl)}" alt="${t("postImage")}"/>`
+    : "";
+  const controls = stories.length > 1
+    ? `<div class="story-viewer-nav"><button type="button" data-story-previous ${currentStoryIndex === 0 ? "disabled" : ""}>${t("storyPrevious")}</button><button type="button" data-story-next ${currentStoryIndex === stories.length - 1 ? "disabled" : ""}>${t("storyNext")}</button></div>`
+    : "";
+  openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${escapeHtml(story.body)}</p>` : ""}${controls}`);
+}
+
+function showStoryList() {
+  if (!stories.length) {
+    showToast(t("noStories"));
+    return;
+  }
+  openModal(`<span class="modal-kicker">${t("littleMoments")}</span><h2 class="modal-title">${t("stories")}</h2><div class="story-list">${stories.map((story, index) => `<button class="language-option" type="button" data-story-index="${index}"><span>${escapeHtml(story.authorName)} · ${escapeHtml(formatPostTime(story.createdAt))}</span>${icon("arrow")}</button>`).join("")}</div>`);
+}
+
+function showStoryComposer() {
+  if (!currentUser) {
+    showLogin();
+    return;
+  }
+  selectedStoryImage = null;
+  openModal(`<span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${t("addStory")}</h2><p class="modal-copy">${t("storyPublished")}</p><form class="form-stack" id="story-form"><label class="form-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label><label class="story-form-image">${t("storyImageLabel")}<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label><span class="form-error hidden" id="story-form-error" role="alert"></span><button class="button button-dark" type="submit">${t("publish")}</button></form>`);
+  const form = document.getElementById("story-form");
+  const imageInput = form.elements.namedItem("image");
+  imageInput.addEventListener("change", () => {
+    selectedStoryImage = imageInput.files?.[0] || null;
+    if (!selectedStoryImage) return;
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(selectedStoryImage.type)) {
+      selectedStoryImage = null;
+      imageInput.value = "";
+      showToast(t("imageOnly"));
+      return;
+    }
+    if (selectedStoryImage.size > 10 * 1024 * 1024) {
+      selectedStoryImage = null;
+      imageInput.value = "";
+      showToast(t("imageTooLarge"));
+    }
+  });
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const body = String(new FormData(form).get("body") || "").trim();
+    const error = document.getElementById("story-form-error");
+    if (!body && !selectedStoryImage) {
+      error.textContent = t("storyEmpty");
+      error.classList.remove("hidden");
+      return;
+    }
+    const submit = form.querySelector('[type="submit"]');
+    submit.disabled = true;
+    try {
+      await window.wallBackend.publishStory({ body, image: selectedStoryImage });
+      closeModal();
+      await refreshStories();
+      showToast(t("storyPublished"));
+    } catch (publishError) {
+      error.textContent = publishError?.code === "PGRST205" || publishError?.code === "42P01"
+        ? t("storyMigrationRequired")
+        : publishError instanceof Error ? publishError.message : t("storyUploadError");
+      error.classList.remove("hidden");
+    } finally {
+      submit.disabled = false;
+    }
+  });
+}
+
+async function refreshStories() {
+  if (!window.wallBackend?.configured) return;
+  try {
+    stories = (await window.wallBackend.getStories()).map(mapRemoteStory);
+    renderStories();
+  } catch (error) {
+    if (error?.code === "PGRST205" || error?.code === "42P01") {
+      console.error("The stories table is missing. Apply supabase/migrations/20261020_stories.sql.", error);
+      if (!storySchemaWarningShown) {
+        showToast(t("storyMigrationRequired"));
+        storySchemaWarningShown = true;
+      }
+      return;
+    }
+    showDataError(error);
+  }
+}
+
 function renderPosts() {
+  renderTrends();
   if (activeView === "friends") {
     if (currentUser) {
       renderFriends();
@@ -247,7 +465,7 @@ function renderFriends() {
       list.innerHTML = `<section class="friends-empty"><span class="empty-icon">${icon("users")}</span><h3>${t("noFriends")}</h3><p>${t("noFriendsCopy")}</p><button class="button button-dark button-small" data-open-friends>${icon("plus")}${t("addFriend")}</button></section>`;
       return;
     }
-    list.innerHTML = `<div class="friends-list">${friends.map((friend) => `<article class="friend-card"><span class="avatar friend-avatar">${escapeHtml(friend.display_name.slice(0, 1).toUpperCase())}</span><span class="person-copy"><strong>${escapeHtml(friend.display_name)}</strong><small>@${escapeHtml(friend.handle)}</small></span><button class="remove-friend-button" data-unfollow="${escapeHtml(friend.id)}" aria-label="${t("removeFriend")}">${icon("close")}</button></article>`).join("")}</div>`;
+    list.innerHTML = `<div class="friends-list">${friends.map((friend) => `<article class="friend-card">${avatarMarkup(friend.display_name, "friend-avatar", friend.avatar_url)}<span class="person-copy"><strong>${escapeHtml(friend.display_name)}</strong><small>@${escapeHtml(friend.handle)}</small></span><button class="remove-friend-button" data-unfollow="${escapeHtml(friend.id)}" aria-label="${t("removeFriend")}">${icon("close")}</button></article>`).join("")}</div>`;
     return;
   }
   const query = document.getElementById("search-input").value.trim().toLowerCase();
@@ -259,7 +477,7 @@ function renderFriends() {
     list.innerHTML = `<section class="friends-empty"><span class="empty-icon">${icon("users")}</span><h3>${t("noFriends")}</h3><p>${query ? t("tryAnotherSearch") : t("noFriendsCopy")}</p><button class="button button-dark button-small" data-open-friends>${icon("plus")}${t("addFriend")}</button></section><p class="friends-demo-note">${t("friendsDemoNote")}</p>`;
     return;
   }
-  list.innerHTML = `<div class="friends-list">${visibleFriends.map((friend) => `<article class="friend-card"><span class="avatar friend-avatar">${escapeHtml(friend.name.slice(0, 1).toUpperCase())}</span><span class="person-copy"><strong>${escapeHtml(friend.name)}</strong><small>${escapeHtml(friend.handle)}</small></span><button class="remove-friend-button" data-remove-friend="${escapeHtml(friend.id)}" aria-label="${t("removeFriend")}">${icon("close")}</button></article>`).join("")}</div><p class="friends-demo-note">${t("friendsDemoNote")}</p>`;
+  list.innerHTML = `<div class="friends-list">${visibleFriends.map((friend) => `<article class="friend-card">${avatarMarkup(friend.name, "friend-avatar", friend.avatarUrl)}<span class="person-copy"><strong>${escapeHtml(friend.name)}</strong><small>${escapeHtml(friend.handle)}</small></span><button class="remove-friend-button" data-remove-friend="${escapeHtml(friend.id)}" aria-label="${t("removeFriend")}">${icon("close")}</button></article>`).join("")}</div><p class="friends-demo-note">${t("friendsDemoNote")}</p>`;
 }
 
 function renderSignInPrompt() {
@@ -314,10 +532,10 @@ function renderPost(post) {
   const liked = currentPostState.liked.has(post.id) || post.liked;
   const saved = currentPostState.saved.has(post.id) || post.saved;
   return `<article class="post-card" data-post-id="${escapeHtml(post.id)}">
-    <header class="post-head"><span class="avatar ${escapeHtml(post.avatarClass || "friend-avatar")}">${escapeHtml(post.avatar)}</span><span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span>${canFollow ? `<button class="follow-button ${followedIds.has(post.authorId) ? "is-following" : ""}" data-action="follow" aria-label="${t(followedIds.has(post.authorId) ? "subscribed" : "subscribe")}">${followedIds.has(post.authorId) ? "✓" : "+"}</button>` : ""}</header>
+    <header class="post-head">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span>${canFollow ? `<button class="follow-button ${followedIds.has(post.authorId) ? "is-following" : ""}" data-action="follow" aria-label="${t(followedIds.has(post.authorId) ? "subscribed" : "subscribe")}">${followedIds.has(post.authorId) ? "✓" : "+"}</button>` : ""}</header>
     <div class="post-body"><p>${body}</p></div>${art}
     <div class="post-actions"><button class="post-action ${liked ? "is-liked" : ""}" data-action="like" aria-label="${liked ? t("unlike") : t("like")}">${icon("heart")}<span>${post.likes}</span></button><button class="post-action" data-action="comment">${icon("message")}<span>${post.comments} ${t("comments")}</span></button><button class="post-action post-save-action ${saved ? "is-saved" : ""}" data-action="save" aria-label="${saved ? t("unsave") : t("savePost")}">${icon(saved ? "bookmark-fill" : "bookmark")}<span>${t("savePost")}</span></button><button class="post-action share-action" data-action="share">${icon("send")}<span>${t("share")}</span></button></div>
-    <form class="post-comment" data-comment-form><span class="avatar avatar-you">${escapeHtml(state.name.slice(0, 1).toUpperCase())}</span><textarea name="comment" maxlength="500" rows="1" placeholder="${t("comment")}" aria-label="${t("comment")}"></textarea><button type="submit" aria-label="${t("commentButton")}">${icon("send")}</button></form>
+    <form class="post-comment" data-comment-form>${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<textarea name="comment" maxlength="500" rows="1" placeholder="${t("comment")}" aria-label="${t("comment")}"></textarea><button type="submit" aria-label="${t("commentButton")}">${icon("send")}</button></form>
     ${commentItems ? `<div class="comment-list">${commentItems}</div>` : ""}
   </article>`;
 }
@@ -391,6 +609,7 @@ function mapRemotePost(row) {
     handle: `@${author.handle || "user"}`,
     avatar: authorName.slice(0, 1).toUpperCase(),
     avatarClass: "friend-avatar",
+    avatarUrl: author.avatar_url,
     time: formatPostTime(row.created_at),
     body: row.body || "",
     imageUrl: row.image_url,
@@ -445,7 +664,9 @@ async function refreshBackendData() {
     updateIdentityUI();
     updateAccountButton();
     updateNotificationBadge();
+    renderStories();
     renderPosts();
+    void refreshStories();
   } catch (error) {
     showDataError(error);
   }
@@ -482,9 +703,12 @@ async function handleAuthSession(session, eventName) {
   }
 }
 
-function openModal(content) {
+function openModal(content, variant = "") {
   const backdrop = document.getElementById("modal-backdrop");
+  const card = document.getElementById("modal-card");
   document.getElementById("modal-content").innerHTML = content;
+  backdrop.classList.toggle("settings-backdrop", variant === "settings");
+  card.classList.toggle("settings-card", variant === "settings");
   backdrop.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   const firstInput = backdrop.querySelector("input, textarea, button:not(.modal-close)");
@@ -492,7 +716,10 @@ function openModal(content) {
 }
 
 function closeModal() {
-  document.getElementById("modal-backdrop").classList.add("hidden");
+  const backdrop = document.getElementById("modal-backdrop");
+  backdrop.classList.add("hidden");
+  backdrop.classList.remove("settings-backdrop");
+  document.getElementById("modal-card").classList.remove("settings-card");
   document.body.style.overflow = "";
 }
 
@@ -644,22 +871,85 @@ function showLogin(signup = false, reset = false) {
   }
 }
 
-function showSettings() {
+function showSettings(activeTab = "account") {
   const themes = [
     ["light", "sun", "themeLight", "themeLightCopy"],
     ["dark", "moon", "themeDark", "themeDarkCopy"],
     ["system", "monitor", "themeSystem", "themeSystemCopy"]
   ];
-  openModal(`<span class="modal-kicker">${icon("settings")} THE WALL</span><h2 class="modal-title">${t("themeTitle")}</h2><p class="modal-copy">${t("themeDescription")}</p>
-    <span class="modal-kicker">${t("appearance")}</span><div class="choice-list">${themes.map(([value, symbol, name, copy]) => `<button class="choice-row ${state.theme === value ? "is-selected" : ""}" data-theme="${value}">${icon(symbol)}<span class="choice-copy"><strong>${t(name)}</strong><small>${t(copy)}</small></span><span class="choice-check">${icon("check")}</span></button>`).join("")}</div>
-    <button class="language-settings-button" data-open-languages>${icon("globe")}<span>${t("languagesTitle")}</span><strong>${t("languageName")}</strong><span class="chevron">›</span></button>`);
+  const languages = Object.keys(translations);
+  const accountPane = currentUser
+    ? `<form class="settings-account-form" id="settings-account-form"><div class="settings-profile-photo">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<label class="button button-small settings-photo-button">${t("profilePhoto")}<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label></div><label class="form-field">${t("displayName")}<input name="displayName" type="text" maxlength="48" required value="${escapeHtml(currentProfile?.display_name || state.name)}"/></label><label class="form-field">${t("currentHandle")}<input type="text" value="${escapeHtml(currentProfile?.handle ? `@${currentProfile.handle}` : state.handle)}" disabled/></label><span class="form-error hidden" id="settings-profile-error" role="alert"></span><button class="button button-dark" type="submit">${t("saveProfile")}</button></form>`
+    : `<p class="settings-account-prompt">${t("signInToEditProfile")}</p><button class="button button-dark" id="settings-login" type="button">${t("logIn")}</button>`;
+  openModal(`<div class="settings-layout">
+    <header class="settings-header"><span class="modal-kicker">${icon("settings")} THE WALL</span><h2 class="modal-title">${t("settingsTitle")}</h2><p class="modal-copy">${t("settingsCopy")}</p></header>
+    <nav class="settings-tabs" aria-label="${t("settingsTitle")}">${[
+      ["account", "users", "accountTab"],
+      ["appearance", "sun", "appearanceTab"],
+      ["language", "globe", "languageTab"]
+    ].map(([tab, symbol, label]) => `<button class="settings-tab ${activeTab === tab ? "is-active" : ""}" type="button" data-settings-tab="${tab}">${icon(symbol)}<span>${t(label)}</span></button>`).join("")}</nav>
+    <section class="settings-pane ${activeTab === "account" ? "" : "hidden"}"><h3>${t("accountTab")}</h3><p class="settings-pane-copy">${t("accountCopy")}</p>${accountPane}</section>
+    <section class="settings-pane ${activeTab === "appearance" ? "" : "hidden"}"><h3>${t("appearanceTab")}</h3><p class="settings-pane-copy">${t("themeDescription")}</p><div class="settings-option-grid">${themes.map(([value, symbol, name, copy]) => `<button class="settings-option ${state.theme === value ? "is-selected" : ""}" type="button" data-theme="${value}">${icon(symbol)}<strong>${t(name)}</strong><small>${t(copy)}</small>${icon("check")}</button>`).join("")}</div></section>
+    <section class="settings-pane ${activeTab === "language" ? "" : "hidden"}"><h3>${t("languageTab")}</h3><p class="settings-pane-copy">${t("madeWithCare")}</p><div class="settings-option-grid settings-language-grid"><button class="settings-option ${state.language === "system" ? "is-selected" : ""}" type="button" data-settings-language="system"><strong>${t("systemLanguage")}</strong><small>${translations[systemLanguage()].languageName}</small>${icon("check")}</button>${languages.map((code) => `<button class="settings-option ${state.language === code ? "is-selected" : ""}" type="button" data-settings-language="${code}"><strong>${translations[code].languageName}</strong>${icon("check")}</button>`).join("")}</div></section>
+    </div>`, "settings");
+  document.querySelectorAll("[data-settings-tab]").forEach((button) => button.addEventListener("click", () => showSettings(button.dataset.settingsTab)));
   document.querySelectorAll("[data-theme]").forEach((button) => button.addEventListener("click", () => {
     state.theme = button.dataset.theme;
     saveState();
     applyTheme();
-    showSettings();
+    showSettings("appearance");
     showToast(t("themeChanged"));
   }));
+  document.querySelectorAll("[data-settings-language]").forEach((button) => button.addEventListener("click", () => {
+    state.language = button.dataset.settingsLanguage;
+    saveState();
+    closeModal();
+    applyLanguage();
+    showSettings("language");
+    showToast(t("languageChanged"));
+  }));
+  document.getElementById("settings-login")?.addEventListener("click", () => showLogin(false));
+  const form = document.getElementById("settings-account-form");
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!currentUser) return showLogin(false);
+    const data = new FormData(form);
+    const name = String(data.get("displayName") || "").trim();
+    const image = data.get("avatar");
+    const error = document.getElementById("settings-profile-error");
+    if (!name) {
+      error.textContent = t("displayName");
+      error.classList.remove("hidden");
+      return;
+    }
+    if (image instanceof File && image.size > 0 && !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(image.type)) {
+      error.textContent = t("imageOnly");
+      error.classList.remove("hidden");
+      return;
+    }
+    if (image instanceof File && image.size > 10 * 1024 * 1024) {
+      error.textContent = t("imageTooLarge");
+      error.classList.remove("hidden");
+      return;
+    }
+    const submit = form.querySelector('[type="submit"]');
+    submit.disabled = true;
+    try {
+      const avatarUrl = await window.wallBackend.updateProfile({ userId: currentUser.id, name, image: image instanceof File && image.size ? image : null });
+      currentProfile = { ...currentProfile, display_name: name, avatar_url: avatarUrl || currentProfile.avatar_url };
+      state.name = name;
+      updateIdentityUI();
+      renderPosts();
+      renderStories();
+      closeModal();
+      showToast(t("profileSaved"));
+    } catch (profileError) {
+      error.textContent = profileError instanceof Error ? profileError.message : t("profileSaveError");
+      error.classList.remove("hidden");
+    } finally {
+      submit.disabled = false;
+    }
+  });
 }
 
 function showLanguages() {
@@ -684,7 +974,7 @@ function showAddFriend() {
     try {
       profiles = await window.wallBackend.searchProfiles(handleInput.value.trim());
       const results = profiles.filter((profile) => profile.id !== currentUser.id);
-      document.getElementById("profile-search-results").innerHTML = results.map((profile) => `<button class="profile-search-result" type="button" data-profile-id="${escapeHtml(profile.id)}" data-profile-handle="${escapeHtml(profile.handle)}"><span class="avatar friend-avatar">${escapeHtml(profile.display_name.slice(0,1).toUpperCase())}</span><span><strong>${escapeHtml(profile.display_name)}</strong><small>@${escapeHtml(profile.handle)}</small></span>${icon("plus")}</button>`).join("");
+      document.getElementById("profile-search-results").innerHTML = results.map((profile) => `<button class="profile-search-result" type="button" data-profile-id="${escapeHtml(profile.id)}" data-profile-handle="${escapeHtml(profile.handle)}">${avatarMarkup(profile.display_name, "friend-avatar", profile.avatar_url)}<span><strong>${escapeHtml(profile.display_name)}</strong><small>@${escapeHtml(profile.handle)}</small></span>${icon("plus")}</button>`).join("");
     } catch (error) {
       showDataError(error);
     }
@@ -857,6 +1147,40 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", async (event) => {
+  const trendTag = event.target.closest("[data-trend-tag], .post-tag");
+  if (trendTag) {
+    event.preventDefault();
+    document.getElementById("search-input").value = trendTag.dataset.trendTag || trendTag.textContent;
+    activeView = "explore";
+    renderNav();
+    updateViewTitle();
+    return;
+  }
+  const storyIndexButton = event.target.closest("[data-story-index]");
+  if (storyIndexButton) {
+    currentStoryIndex = Number(storyIndexButton.dataset.storyIndex);
+    renderStoryViewer();
+    return;
+  }
+  if (event.target.closest("[data-story-previous]") && currentStoryIndex > 0) {
+    currentStoryIndex -= 1;
+    renderStoryViewer();
+    return;
+  }
+  if (event.target.closest("[data-story-next]") && currentStoryIndex < stories.length - 1) {
+    currentStoryIndex += 1;
+    renderStoryViewer();
+    return;
+  }
+  if (event.target.closest("#see-all-stories")) {
+    showStoryList();
+    return;
+  }
+  if (event.target.closest("#show-all-trends")) {
+    showAllTrends = !showAllTrends;
+    renderTrends();
+    return;
+  }
   const viewButton = event.target.closest("[data-view]");
   if (viewButton) {
     activeView = viewButton.dataset.view;
@@ -995,18 +1319,10 @@ document.addEventListener("click", async (event) => {
     updateViewTitle();
     void refreshBackendData();
   }
-  if (event.target.closest("#add-story")) showToast(t("storyComing"));
+  if (event.target.closest("#add-story")) showStoryComposer();
   if (event.target.closest("#clear-search")) {
     document.getElementById("search-input").value = "";
     renderPosts();
-  }
-  if (event.target.closest("#rail-toggle")) {
-    const collapsed = document.querySelector(".app-shell").classList.toggle("menu-collapsed");
-    localStorage.setItem(`${STORAGE_KEY}-menu-collapsed`, String(collapsed));
-    const toggle = document.getElementById("rail-toggle");
-    toggle.setAttribute("aria-expanded", String(!collapsed));
-    toggle.setAttribute("aria-label", t(collapsed ? "expandMenu" : "collapseMenu"));
-    toggle.classList.toggle("is-collapsed", collapsed);
   }
 });
 
@@ -1051,10 +1367,6 @@ document.getElementById("modal-backdrop").addEventListener("click", (event) => {
 });
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeModal();
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-    event.preventDefault();
-    document.getElementById("search-input").focus();
-  }
 });
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (state.theme === "system") applyTheme();
@@ -1065,13 +1377,8 @@ window.addEventListener("languagechange", () => {
 
 applyTheme();
 applyLanguage();
+renderStories();
 installComposer();
-const collapsedMenu = localStorage.getItem(`${STORAGE_KEY}-menu-collapsed`) === "true";
-document.querySelector(".app-shell").classList.toggle("menu-collapsed", collapsedMenu);
-const railToggle = document.getElementById("rail-toggle");
-railToggle.setAttribute("aria-expanded", String(!collapsedMenu));
-railToggle.setAttribute("aria-label", t(collapsedMenu ? "expandMenu" : "collapseMenu"));
-railToggle.classList.toggle("is-collapsed", collapsedMenu);
 updateAccountButton();
 if (window.wallBackend?.configured) {
   window.wallBackend.onAuthChange((session, eventName) => {
