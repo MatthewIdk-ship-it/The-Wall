@@ -15,6 +15,16 @@ create table public.posts (
   check (char_length(body) > 0 or image_url is not null)
 );
 
+create table public.stories (
+  id uuid primary key default gen_random_uuid(),
+  author_id uuid not null references public.profiles (id) on delete cascade,
+  body text not null default '' check (char_length(body) <= 500),
+  image_url text,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null default (now() + interval '24 hours'),
+  check (char_length(body) > 0 or image_url is not null)
+);
+
 create table public.comments (
   id uuid primary key default gen_random_uuid(),
   post_id uuid not null references public.posts (id) on delete cascade,
@@ -59,6 +69,7 @@ create table public.notifications (
 
 create index posts_created_at_idx on public.posts (created_at desc);
 create index posts_author_id_idx on public.posts (author_id, created_at desc);
+create index stories_expires_at_idx on public.stories (expires_at desc);
 create index comments_post_id_idx on public.comments (post_id, created_at);
 create index notifications_user_created_idx on public.notifications (user_id, created_at desc);
 create index profiles_handle_idx on public.profiles (handle);
@@ -182,6 +193,7 @@ for each row execute procedure public.notify_new_comment();
 
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
+alter table public.stories enable row level security;
 alter table public.comments enable row level security;
 alter table public.post_likes enable row level security;
 alter table public.saved_posts enable row level security;
@@ -192,6 +204,8 @@ grant select on public.profiles to anon, authenticated;
 grant update (display_name, avatar_url) on public.profiles to authenticated;
 grant select on public.posts to anon, authenticated;
 grant insert, delete on public.posts to authenticated;
+grant select on public.stories to anon, authenticated;
+grant insert, delete on public.stories to authenticated;
 grant select on public.comments to anon, authenticated;
 grant insert, delete on public.comments to authenticated;
 grant select on public.post_likes to anon, authenticated;
@@ -211,6 +225,13 @@ create policy "Users create their own posts"
 on public.posts for insert to authenticated with check ((select auth.uid()) = author_id);
 create policy "Users delete their own posts"
 on public.posts for delete to authenticated using ((select auth.uid()) = author_id);
+
+create policy "Active stories are visible to everyone"
+on public.stories for select to anon, authenticated using (expires_at > now());
+create policy "Users create their own stories"
+on public.stories for insert to authenticated with check ((select auth.uid()) = author_id);
+create policy "Users delete their own stories"
+on public.stories for delete to authenticated using ((select auth.uid()) = author_id);
 
 create policy "Comments are visible to everyone"
 on public.comments for select to anon, authenticated using (true);
