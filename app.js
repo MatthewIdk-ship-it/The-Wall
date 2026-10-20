@@ -49,6 +49,10 @@ const featureTranslations = {
     appearanceTab: "Aspect",
     languageTab: "Limbă",
     accountCopy: "Editează numele afișat și fotografia de profil.",
+    viewAccount: "Vezi contul",
+    accountViewCopy: "Informațiile profilului tău și opțiunile contului.",
+    editAccount: "Editează contul",
+    signOutAccount: "Deconectează-te",
     displayName: "Nume afișat",
     profilePhoto: "Fotografie de profil",
     saveProfile: "Salvează profilul",
@@ -77,6 +81,10 @@ const featureTranslations = {
     appearanceTab: "Appearance",
     languageTab: "Language",
     accountCopy: "Update your display name and profile photo.",
+    viewAccount: "View account",
+    accountViewCopy: "Your profile information and account options.",
+    editAccount: "Edit account",
+    signOutAccount: "Sign out",
     displayName: "Display name",
     profilePhoto: "Profile photo",
     saveProfile: "Save profile",
@@ -120,6 +128,7 @@ const authTranslations = {
     usernameTaken: "Acest nume de utilizator este deja folosit.",
     showPassword: "Arată parola",
     hidePassword: "Ascunde parola",
+    imageSelected: "Previzualizarea fotografiei selectate.",
     emailAlreadyUsed: "Există deja un cont cu această adresă de e-mail.",
     newPasswordTitle: "Alege o parolă nouă.",
     newPasswordCopy: "Folosește cel puțin 8 caractere pentru parola contului tău.",
@@ -134,6 +143,7 @@ const authTranslations = {
     usernameTaken: "That username is already taken.",
     showPassword: "Show password",
     hidePassword: "Hide password",
+    imageSelected: "Preview of the selected photo.",
     emailAlreadyUsed: "An account already exists with this email address.",
     newPasswordTitle: "Choose a new password.",
     newPasswordCopy: "Use at least 8 characters for your account password.",
@@ -174,6 +184,7 @@ let showAllTrends = false;
 let storySchemaWarningShown = false;
 let activeView = "home";
 let toastTimer;
+let profileImagePreviewUrl = null;
 
 function t(key) {
   const language = activeLanguageCode();
@@ -717,7 +728,9 @@ function openModal(content, variant = "") {
   const card = document.getElementById("modal-card");
   document.getElementById("modal-content").innerHTML = content;
   backdrop.classList.toggle("settings-backdrop", variant === "settings");
+  backdrop.classList.toggle("profile-backdrop", variant === "profile");
   card.classList.toggle("settings-card", variant === "settings");
+  card.classList.toggle("profile-card", variant === "profile");
   backdrop.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   const firstInput = backdrop.querySelector("input, textarea, button:not(.modal-close)");
@@ -728,8 +741,46 @@ function closeModal() {
   const backdrop = document.getElementById("modal-backdrop");
   backdrop.classList.add("hidden");
   backdrop.classList.remove("settings-backdrop");
+  backdrop.classList.remove("profile-backdrop");
   document.getElementById("modal-card").classList.remove("settings-card");
+  document.getElementById("modal-card").classList.remove("profile-card");
   document.body.style.overflow = "";
+  if (profileImagePreviewUrl) {
+    URL.revokeObjectURL(profileImagePreviewUrl);
+    profileImagePreviewUrl = null;
+  }
+}
+
+function showProfile() {
+  if (!currentUser) return showLogin(false);
+  const profile = currentProfile || {
+    display_name: state.name,
+    handle: state.handle.replace(/^@/, ""),
+    avatar_url: null
+  };
+  openModal(`<div class="profile-view">
+    <span class="modal-kicker">${icon("users")} THE WALL</span>
+    <h2 class="modal-title">${t("viewAccount")}</h2>
+    <p class="modal-copy">${t("accountViewCopy")}</p>
+    <section class="profile-view-card">
+      ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
+      <div class="profile-view-details"><h3>${escapeHtml(profile.display_name)}</h3><p>@${escapeHtml(profile.handle)}</p><small>${escapeHtml(currentUser.email || "")}</small></div>
+    </section>
+    <div class="profile-view-actions">
+      <button class="button button-dark" id="profile-edit-account" type="button">${icon("settings")}${t("editAccount")}</button>
+      <button class="button profile-sign-out" id="profile-sign-out" type="button">${icon("close")}${t("signOutAccount")}</button>
+    </div>
+  </div>`, "profile");
+  document.getElementById("profile-edit-account").addEventListener("click", () => showSettings("account"));
+  document.getElementById("profile-sign-out").addEventListener("click", async () => {
+    try {
+      await window.wallBackend.signOut();
+      closeModal();
+      showToast(t("signOutSuccess"));
+    } catch (error) {
+      showDataError(error);
+    }
+  });
 }
 
 function authField(label, name, type, autocomplete, placeholder = "", attributes = "") {
@@ -935,6 +986,27 @@ function showSettings(activeTab = "account") {
   }));
   document.getElementById("settings-login")?.addEventListener("click", () => showLogin(false));
   const form = document.getElementById("settings-account-form");
+  const avatarInput = form?.elements.namedItem("avatar");
+  avatarInput?.addEventListener("change", () => {
+    const image = avatarInput.files?.[0];
+    const error = document.getElementById("settings-profile-error");
+    if (!image) return;
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(image.type)) {
+      error.textContent = t("imageOnly");
+      error.classList.remove("hidden");
+      return;
+    }
+    if (image.size > 10 * 1024 * 1024) {
+      error.textContent = t("imageTooLarge");
+      error.classList.remove("hidden");
+      return;
+    }
+    error.classList.add("hidden");
+    if (profileImagePreviewUrl) URL.revokeObjectURL(profileImagePreviewUrl);
+    profileImagePreviewUrl = URL.createObjectURL(image);
+    const avatar = form.querySelector(".settings-profile-photo .avatar");
+    avatar.innerHTML = `<img src="${escapeHtml(profileImagePreviewUrl)}" alt="${escapeHtml(t("imageSelected"))}"/>`;
+  });
   form?.elements.namedItem("handle")?.addEventListener("input", (event) => {
     const input = event.currentTarget;
     setAuthError(form, "handle", input.value && !USERNAME_PATTERN.test(input.value) ? t("invalidUsername") : "");
@@ -1351,8 +1423,7 @@ document.addEventListener("click", async (event) => {
     showToast(t("themeChanged"));
   }
   if (event.target.closest("#profile-switch") || event.target.closest("#mobile-profile")) {
-    if (currentUser) document.getElementById("open-login").click();
-    else showLogin(false);
+    showProfile();
   }
   if (event.target.closest("#feed-filter")) {
     if (!currentUser) {
