@@ -81,19 +81,20 @@ security definer
 set search_path = ''
 as $$
 declare
+  requested_handle text;
   normalized_handle text;
 begin
-  normalized_handle := lower(regexp_replace(coalesce(new.raw_user_meta_data ->> 'handle', split_part(new.email, '@', 1)), '[^a-zA-Z0-9._-]', '', 'g'));
-  normalized_handle := left(normalized_handle, 23);
-  if length(normalized_handle) < 3 then
-    normalized_handle := 'member';
+  requested_handle := new.raw_user_meta_data ->> 'handle';
+  if requested_handle is null or requested_handle !~* '^[a-z0-9._-]{3,32}$' then
+    raise exception using errcode = '23514', message = 'Invalid username';
   end if;
+  normalized_handle := lower(requested_handle);
 
   insert into public.profiles (id, display_name, handle)
   values (
     new.id,
     left(coalesce(nullif(trim(new.raw_user_meta_data ->> 'display_name'), ''), split_part(new.email, '@', 1)), 48),
-    normalized_handle || '-' || substr(replace(new.id::text, '-', ''), 1, 6)
+    normalized_handle
   );
   return new;
 end;
@@ -201,7 +202,7 @@ alter table public.follows enable row level security;
 alter table public.notifications enable row level security;
 
 grant select on public.profiles to anon, authenticated;
-grant update (display_name, avatar_url) on public.profiles to authenticated;
+grant update (display_name, handle, avatar_url) on public.profiles to authenticated;
 grant select on public.posts to anon, authenticated;
 grant insert, delete on public.posts to authenticated;
 grant select on public.stories to anon, authenticated;
