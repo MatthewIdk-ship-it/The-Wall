@@ -1042,7 +1042,13 @@ function showSettings(activeTab = "account") {
     const submit = form.querySelector('[type="submit"]');
     submit.disabled = true;
     try {
-      const avatarUrl = await window.wallBackend.updateProfile({ userId: currentUser.id, name, handle, image: image instanceof File && image.size ? image : null });
+      const avatarUrl = await window.wallBackend.updateProfile({
+        userId: currentUser.id,
+        name,
+        handle,
+        updateHandle: handle !== currentProfile?.handle,
+        image: image instanceof File && image.size ? image : null
+      });
       currentProfile = { ...currentProfile, display_name: name, handle, avatar_url: avatarUrl || currentProfile.avatar_url };
       state.name = name;
       state.handle = `@${handle}`;

@@ -63,7 +63,7 @@
       if (error) throw error;
       return data;
     },
-    async updateProfile({ userId, name, handle, image }) {
+    async updateProfile({ userId, name, handle, image, updateHandle = false }) {
       const api = requireClient();
       const normalizedHandle = normalizeHandle(handle);
       let avatarUrl = null;
@@ -75,7 +75,8 @@
         if (uploadError) throw uploadError;
         avatarUrl = api.storage.from("post-images").getPublicUrl(uploadedPath).data.publicUrl;
       }
-      const updates = { display_name: name, handle: normalizedHandle };
+      const updates = { display_name: name };
+      if (updateHandle) updates.handle = normalizedHandle;
       if (avatarUrl) updates.avatar_url = avatarUrl;
       const { error } = await api.from("profiles").update(updates).eq("id", userId);
       if (error) {
