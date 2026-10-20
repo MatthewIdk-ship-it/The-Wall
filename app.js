@@ -116,6 +116,10 @@ const authTranslations = {
     expandMenu: "Extinde meniul",
     collapseMenu: "Restrânge meniul",
     invalidUsername: "Numele de utilizator trebuie să aibă 3–32 de caractere: litere, cifre, punct, cratimă sau underscore.",
+    usernameHint: "3–32 de caractere: litere, cifre, punct, cratimă sau underscore. Fără spații.",
+    usernameTaken: "Acest nume de utilizator este deja folosit.",
+    showPassword: "Arată parola",
+    hidePassword: "Ascunde parola",
     emailAlreadyUsed: "Există deja un cont cu această adresă de e-mail.",
     newPasswordTitle: "Alege o parolă nouă.",
     newPasswordCopy: "Folosește cel puțin 8 caractere pentru parola contului tău.",
@@ -126,6 +130,10 @@ const authTranslations = {
     expandMenu: "Expand menu",
     collapseMenu: "Collapse menu",
     invalidUsername: "Use 3–32 characters: letters, numbers, dots, hyphens, or underscores.",
+    usernameHint: "3–32 characters: letters, numbers, dots, hyphens, or underscores. No spaces.",
+    usernameTaken: "That username is already taken.",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
     emailAlreadyUsed: "An account already exists with this email address.",
     newPasswordTitle: "Choose a new password.",
     newPasswordCopy: "Use at least 8 characters for your account password.",
@@ -134,6 +142,7 @@ const authTranslations = {
   }
 };
 
+const USERNAME_PATTERN = /^[A-Za-z0-9._-]{3,32}$/;
 const STORAGE_KEY = "the-wall-demo-state-v1";
 const POSTS_STORAGE_KEY = `${STORAGE_KEY}-posts-v2`;
 const defaults = { theme: "system", language: "system", name: "Guest", handle: "", loggedIn: false };
@@ -727,6 +736,10 @@ function authField(label, name, type, autocomplete, placeholder = "", attributes
   return `<label class="form-field">${label}<input name="${name}" type="${type}" autocomplete="${autocomplete}" ${attributes} ${placeholder ? `placeholder="${escapeHtml(placeholder)}"` : ""}/><span class="field-error hidden" data-error-for="${name}"></span></label>`;
 }
 
+function authPasswordField(label, name, autocomplete, placeholder, attributes, canReveal = false) {
+  return `<label class="form-field">${label}<span class="password-input-wrap"><input name="${name}" type="password" autocomplete="${autocomplete}" ${attributes} ${placeholder ? `placeholder="${escapeHtml(placeholder)}"` : ""}/>${canReveal ? `<button class="password-toggle" type="button" aria-label="${t("showPassword")}" aria-pressed="false" data-password-toggle>${icon("eye")}</button>` : ""}</span><span class="field-error hidden" data-error-for="${name}"></span></label>`;
+}
+
 function setAuthError(form, field, message) {
   const input = form.elements.namedItem(field);
   const error = form.querySelector(`[data-error-for="${field}"]`);
@@ -739,6 +752,8 @@ function setAuthError(form, field, message) {
 
 function mapAuthError(error, signup) {
   const code = `${error.code || ""} ${error.message || ""}`.toLowerCase();
+  if (code.includes("profiles_handle_key") || code.includes("duplicate key") && code.includes("handle")) return { field: "handle", message: t("usernameTaken") };
+  if (code.includes("invalid username") || code.includes("23514")) return { field: "handle", message: t("invalidUsername") };
   if (code.includes("invalid_credentials") || code.includes("invalid login")) return { field: "password", message: t("invalidCredentials") };
   if (code.includes("email_not_confirmed")) return { field: "email", message: t("checkEmail") };
   if (code.includes("email_address_invalid") || code.includes("invalid email")) return { field: "email", message: t("invalidEmail") };
@@ -780,7 +795,7 @@ function showLogin(signup = false, reset = false) {
   const description = reset ? t("resetCopy") : signup ? t("signupCopy") : t("loginCopy");
   const emailField = authField(t("email"), "email", "email", "email", "guest@example.com", 'required maxlength="254"');
   const passwordFields = signup
-    ? `${authField(t("username"), "handle", "text", "username", "guest", 'required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}"')} ${authField(t("password"), "password", "password", "new-password", t("passwordHint"), 'required minlength="8" maxlength="72"')} ${authField(t("confirmPassword"), "confirmPassword", "password", "new-password", "••••••••", 'required minlength="8" maxlength="72"')}`
+    ? `${authField(t("username"), "handle", "text", "username", "guest", 'required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}"')}<small class="field-hint">${t("usernameHint")}</small> ${authPasswordField(t("password"), "password", "new-password", t("passwordHint"), 'required minlength="8" maxlength="72"', true)} ${authPasswordField(t("confirmPassword"), "confirmPassword", "new-password", "••••••••", 'required minlength="8" maxlength="72"')}`
     : reset ? "" : authField(t("password"), "password", "password", "current-password", "••••••••", 'required maxlength="72"');
   const submitText = reset ? t("sendReset") : signup ? t("createAccount") : t("continue");
   const note = window.wallBackend?.configured ? t("authBackendWarning") : t("authConfigMissing");
@@ -790,10 +805,20 @@ function showLogin(signup = false, reset = false) {
     ${!reset ? `<button class="modal-switch" id="switch-auth">${signup ? t("haveAccount") : t("noAccount")} <strong>${signup ? t("logInLink") : t("createAccount")}</strong></button>` : `<button class="modal-switch" id="switch-auth"><strong>${t("logInLink")}</strong></button>`}`);
   const formElement = document.getElementById("auth-form");
   const fieldNames = ["email", "password", "confirmPassword", "handle"];
+  formElement.querySelector("[data-password-toggle]")?.addEventListener("click", (event) => {
+    const button = event.currentTarget;
+    const input = formElement.elements.namedItem("password");
+    const isVisible = input.type === "text";
+    input.type = isVisible ? "password" : "text";
+    button.innerHTML = icon(isVisible ? "eye" : "eye-off");
+    button.setAttribute("aria-label", t(isVisible ? "showPassword" : "hidePassword"));
+    button.setAttribute("aria-pressed", String(!isVisible));
+  });
   formElement.addEventListener("input", (event) => {
     const input = event.target;
     if (!(input instanceof HTMLInputElement)) return;
     if (input.name === "email" && input.value && !input.validity.valid) setAuthError(formElement, "email", t("invalidEmail"));
+    else if (input.name === "handle" && input.value && !USERNAME_PATTERN.test(input.value)) setAuthError(formElement, "handle", t("invalidUsername"));
     else setAuthError(formElement, input.name, "");
     if (input.name === "password" || input.name === "confirmPassword") {
       const password = formElement.elements.namedItem("password")?.value;
@@ -819,7 +844,7 @@ function showLogin(signup = false, reset = false) {
       valid = false;
     }
     const username = String(data.get("handle") || "");
-    if (signup && !/^[a-zA-Z0-9._-]{3,32}$/.test(username)) {
+    if (signup && !USERNAME_PATTERN.test(username)) {
       setAuthError(formElement, "handle", t("invalidUsername"));
       valid = false;
     }
@@ -844,7 +869,7 @@ function showLogin(signup = false, reset = false) {
       }
       if (signup) {
         const name = String(data.get("name") || "").trim();
-        const handle = String(data.get("handle") || "").trim().replace(/^@+/, "").toLowerCase();
+        const handle = String(data.get("handle") || "").trim().toLowerCase();
         await window.wallBackend.signUp({ email, password, name, handle });
         closeModal();
         showToast(t("checkEmail"));
@@ -879,7 +904,7 @@ function showSettings(activeTab = "account") {
   ];
   const languages = Object.keys(translations);
   const accountPane = currentUser
-    ? `<form class="settings-account-form" id="settings-account-form"><div class="settings-profile-photo">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<label class="button button-small settings-photo-button">${t("profilePhoto")}<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label></div><label class="form-field">${t("displayName")}<input name="displayName" type="text" maxlength="48" required value="${escapeHtml(currentProfile?.display_name || state.name)}"/></label><label class="form-field">${t("currentHandle")}<input type="text" value="${escapeHtml(currentProfile?.handle ? `@${currentProfile.handle}` : state.handle)}" disabled/></label><span class="form-error hidden" id="settings-profile-error" role="alert"></span><button class="button button-dark" type="submit">${t("saveProfile")}</button></form>`
+    ? `<form class="settings-account-form" id="settings-account-form"><div class="settings-profile-photo">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<label class="button button-small settings-photo-button">${t("profilePhoto")}<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label></div><label class="form-field">${t("displayName")}<input name="displayName" type="text" maxlength="48" required value="${escapeHtml(currentProfile?.display_name || state.name)}"/></label><label class="form-field">${t("currentHandle")}<input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}" required value="${escapeHtml(currentProfile?.handle || "")}" aria-describedby="settings-username-hint"/><span class="field-error hidden" data-error-for="handle"></span></label><small class="field-hint" id="settings-username-hint">${t("usernameHint")}</small><span class="form-error hidden" id="settings-profile-error" role="alert"></span><button class="button button-dark" type="submit">${t("saveProfile")}</button></form>`
     : `<p class="settings-account-prompt">${t("signInToEditProfile")}</p><button class="button button-dark" id="settings-login" type="button">${t("logIn")}</button>`;
   openModal(`<div class="settings-layout">
     <header class="settings-header"><span class="modal-kicker">${icon("settings")} THE WALL</span><h2 class="modal-title">${t("settingsTitle")}</h2><p class="modal-copy">${t("settingsCopy")}</p></header>
@@ -910,16 +935,26 @@ function showSettings(activeTab = "account") {
   }));
   document.getElementById("settings-login")?.addEventListener("click", () => showLogin(false));
   const form = document.getElementById("settings-account-form");
+  form?.elements.namedItem("handle")?.addEventListener("input", (event) => {
+    const input = event.currentTarget;
+    setAuthError(form, "handle", input.value && !USERNAME_PATTERN.test(input.value) ? t("invalidUsername") : "");
+  });
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!currentUser) return showLogin(false);
     const data = new FormData(form);
     const name = String(data.get("displayName") || "").trim();
+    const handle = String(data.get("handle") || "").trim().toLowerCase();
     const image = data.get("avatar");
     const error = document.getElementById("settings-profile-error");
+    setAuthError(form, "handle", "");
     if (!name) {
       error.textContent = t("displayName");
       error.classList.remove("hidden");
+      return;
+    }
+    if (!USERNAME_PATTERN.test(handle)) {
+      setAuthError(form, "handle", t("invalidUsername"));
       return;
     }
     if (image instanceof File && image.size > 0 && !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(image.type)) {
@@ -935,17 +970,27 @@ function showSettings(activeTab = "account") {
     const submit = form.querySelector('[type="submit"]');
     submit.disabled = true;
     try {
-      const avatarUrl = await window.wallBackend.updateProfile({ userId: currentUser.id, name, image: image instanceof File && image.size ? image : null });
-      currentProfile = { ...currentProfile, display_name: name, avatar_url: avatarUrl || currentProfile.avatar_url };
+      const avatarUrl = await window.wallBackend.updateProfile({ userId: currentUser.id, name, handle, image: image instanceof File && image.size ? image : null });
+      currentProfile = { ...currentProfile, display_name: name, handle, avatar_url: avatarUrl || currentProfile.avatar_url };
       state.name = name;
+      state.handle = `@${handle}`;
+      posts = posts.map((post) => post.authorId === currentUser.id ? { ...post, handle: state.handle } : post);
+      stories = stories.map((story) => story.authorId === currentUser.id ? { ...story, authorName: name, handle: state.handle, avatarUrl: currentProfile.avatar_url } : story);
       updateIdentityUI();
       renderPosts();
       renderStories();
       closeModal();
       showToast(t("profileSaved"));
     } catch (profileError) {
-      error.textContent = profileError instanceof Error ? profileError.message : t("profileSaveError");
-      error.classList.remove("hidden");
+      const failure = `${profileError?.code || ""} ${profileError?.message || ""}`.toLowerCase();
+      if (failure.includes("profiles_handle_key") || failure.includes("duplicate key") && failure.includes("handle")) {
+        setAuthError(form, "handle", t("usernameTaken"));
+      } else if (failure.includes("invalid username") || failure.includes("23514")) {
+        setAuthError(form, "handle", t("invalidUsername"));
+      } else {
+        error.textContent = profileError instanceof Error ? profileError.message : t("profileSaveError");
+        error.classList.remove("hidden");
+      }
     } finally {
       submit.disabled = false;
     }

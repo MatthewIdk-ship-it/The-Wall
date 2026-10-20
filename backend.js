@@ -13,6 +13,12 @@
     return client;
   };
 
+  const normalizeHandle = (handle) => {
+    const normalized = handle.trim().toLowerCase();
+    if (!/^[a-z0-9._-]{3,32}$/.test(normalized)) throw new Error("Invalid username");
+    return normalized;
+  };
+
   window.wallBackend = {
     configured,
     client,
@@ -29,10 +35,11 @@
     },
     async signUp({ email, password, name, handle }) {
       const api = requireClient();
+      const normalizedHandle = normalizeHandle(handle);
       const { data, error } = await api.auth.signUp({
         email,
         password,
-        options: { data: { display_name: name, handle } }
+        options: { data: { display_name: name, handle: normalizedHandle } }
       });
       if (error) throw error;
       return data;
@@ -56,8 +63,9 @@
       if (error) throw error;
       return data;
     },
-    async updateProfile({ userId, name, image }) {
+    async updateProfile({ userId, name, handle, image }) {
       const api = requireClient();
+      const normalizedHandle = normalizeHandle(handle);
       let avatarUrl = null;
       let uploadedPath = null;
       if (image) {
@@ -67,7 +75,7 @@
         if (uploadError) throw uploadError;
         avatarUrl = api.storage.from("post-images").getPublicUrl(uploadedPath).data.publicUrl;
       }
-      const updates = { display_name: name };
+      const updates = { display_name: name, handle: normalizedHandle };
       if (avatarUrl) updates.avatar_url = avatarUrl;
       const { error } = await api.from("profiles").update(updates).eq("id", userId);
       if (error) {
