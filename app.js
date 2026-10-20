@@ -1006,7 +1006,7 @@ document.addEventListener("click", async (event) => {
     const toggle = document.getElementById("rail-toggle");
     toggle.setAttribute("aria-expanded", String(!collapsed));
     toggle.setAttribute("aria-label", t(collapsed ? "expandMenu" : "collapseMenu"));
-    toggle.querySelector("use").setAttribute("href", collapsed ? "#i-chevron-right" : "#i-chevron-left");
+    toggle.classList.toggle("is-collapsed", collapsed);
   }
 });
 
@@ -1071,7 +1071,7 @@ document.querySelector(".app-shell").classList.toggle("menu-collapsed", collapse
 const railToggle = document.getElementById("rail-toggle");
 railToggle.setAttribute("aria-expanded", String(!collapsedMenu));
 railToggle.setAttribute("aria-label", t(collapsedMenu ? "expandMenu" : "collapseMenu"));
-railToggle.querySelector("use").setAttribute("href", collapsedMenu ? "#i-chevron-right" : "#i-chevron-left");
+railToggle.classList.toggle("is-collapsed", collapsedMenu);
 updateAccountButton();
 if (window.wallBackend?.configured) {
   window.wallBackend.onAuthChange((session, eventName) => {
