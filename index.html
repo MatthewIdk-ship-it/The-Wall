@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="The Wall — un loc simplu pentru idei, oameni și conversații."
+    />
+    <title>The Wall — social, fără zgomot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js" defer></script>
+    <script src="backend.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.7 8.3-2.2 5.2-5.2 2.2 2.2-5.2 5.2-2.2Z"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol>
+      <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3h-.2a1.8 1.8 0 0 1 0-3.6h.2a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 3Z"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.8c0 5.2-8.8 10.2-8.8 10.2S3.2 14 3.2 8.8a4.8 4.8 0 0 1 8.8-2.6 4.8 4.8 0 0 1 8.8 2.6Z"/></symbol>
+      <symbol id="i-message" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.8 8.8 0 0 1-4-.9L4 20l1.3-3.4A7 7 0 0 1 4 12c0-4.1 3.6-7.5 8-7.5s8 2.9 8 7Z"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="m21 3-7.2 18-3.6-7.2L3 10.2 21 3Z"/><path d="M10.2 13.8 15 9"/></symbol>
+      <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></symbol>
+      <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+      <symbol id="i-bookmark-fill" viewBox="0 0 24 24"><path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" fill="currentColor" stroke="currentColor"/></symbol>
+    </svg>
+
+    <div class="app-shell">
+      <aside class="left-rail">
+        <a class="brand" href="#" aria-label="The Wall home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span class="brand-name">the wall<span class="brand-period">.</span></span>
+        </a>
+        <button class="nav-item desktop-settings-top" id="open-settings" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg><span data-i18n="settings">Setări</span></button>
+        <button class="rail-toggle" id="rail-toggle" aria-label="Minimize menu" aria-expanded="true"><svg class="icon"><use href="#i-menu"/></svg></button>
+
+        <button class="profile-switch" id="profile-switch" type="button" aria-label="Profile">
+          <span class="avatar avatar-you">G</span>
+          <span class="profile-copy"><strong id="sidebar-name">Guest</strong><small class="hidden" id="sidebar-handle"></small></span>
+          <svg class="icon"><use href="#i-more"/></svg>
+        </button>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <button class="nav-item is-active" data-view="home"><svg class="icon"><use href="#i-grid"/></svg><span data-i18n="navHome">Acasă</span></button>
+          <button class="nav-item" data-view="explore"><svg class="icon"><use href="#i-compass"/></svg><span data-i18n="navExplore">Explorează</span></button>
+          <button class="nav-item" data-view="friends"><svg class="icon"><use href="#i-users"/></svg><span data-i18n="navFriends">Prieteni</span></button>
+          <button class="nav-item" data-view="notifications"><svg class="icon"><use href="#i-bell"/></svg><span data-i18n="navNotifications">Notificări</span><span class="nav-badge hidden"></span></button>
+          <button class="nav-item" data-view="saved"><svg class="icon"><use href="#i-bookmark"/></svg><span data-i18n="navSaved">Salvate</span></button>
+        </nav>
+
+        <div class="rail-spacer"></div>
+        <div class="sidebar-note"><span class="note-dot"></span><span data-i18n="quietCorner">Colțul tău liniștit de pe internet.</span></div>
+      </aside>
+
+      <main class="main-column">
+        <header class="topbar">
+          <div class="mobile-brand brand">
+            <span class="brand-mark"><span></span><span></span><span></span></span>
+            <span class="brand-name">the wall<span class="brand-period">.</span></span>
+          </div>
+          <div class="page-heading"><span class="eyebrow" data-i18n="mondayNote">LUNI, 19 OCTOMBRIE</span><h1 id="page-title" data-i18n="goodMorning">Bună dimineața <span>☀️</span></h1></div>
+          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="search-input" type="search" placeholder="Caută pe The Wall..." aria-label="Search"/><kbd>⌘ K</kbd></label>
+          <button class="icon-button mobile-settings" id="open-settings-mobile" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg></button>
+        </header>
+
+        <section class="stories-section">
+          <div class="section-title"><div><span class="eyebrow" data-i18n="littleMoments">MOMENTE MICI</span><h2 data-i18n="stories">Poveștile tale</h2></div><button class="text-button" data-i18n="seeAll">Vezi toate <svg class="icon"><use href="#i-arrow"/></svg></button></div>
+          <div class="stories">
+            <button class="story story-add" id="add-story"><span class="story-ring"><span class="avatar avatar-you">M</span><span class="story-add-icon"><svg class="icon"><use href="#i-plus"/></svg></span></span><span data-i18n="yourStory">Povestea ta</span></button>
+          </div>
+        </section>
+
+        <section class="feed-section">
+          <div class="feed-heading"><div><span class="eyebrow" data-i18n="yourCircle">CERCUL TĂU</span><h2 id="feed-title" data-i18n="latest">Cele mai noi</h2></div><button class="feed-filter" id="feed-filter"><svg class="icon"><use href="#i-sparkle"/></svg><span data-i18n="forYou">Pentru tine</span><span class="chevron">⌄</span></button></div>
+
+          <article class="composer-card">
+            <form class="feed-composer-form" id="feed-composer-form">
+              <div class="composer-top"><span class="avatar avatar-you">G</span><textarea class="composer-prompt" id="composer-prompt" name="body" maxlength="1000" data-i18n-placeholder="composerPrompt" placeholder="Ce ai vrea să împărtășești?" aria-label="Post text"></textarea></div>
+              <div class="upload-preview hidden" id="upload-preview"></div>
+              <div class="composer-bottom">
+                <div class="composer-tools">
+                  <label class="composer-tool" for="image-input"><svg class="icon"><use href="#i-image"/></svg><span data-i18n="addPhoto">Adaugă o fotografie</span></label>
+                  <input id="image-input" class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+                  <span class="composer-hint"><svg class="icon"><use href="#i-sparkle"/></svg><span data-i18n="mentionHint">Folosește @ pentru a menționa.</span></span>
+                </div>
+                      <button class="button button-dark button-small" id="composer-submit" type="submit"><span data-i18n="post">Postează</span><svg class="icon"><use href="#i-arrow"/></svg></button>
+              </div>
+            </form>
+          </article>
+
+          <div class="post-list" id="post-list" aria-live="polite"></div>
+          <div class="empty-state hidden" id="empty-state"><span class="empty-icon"><svg class="icon"><use href="#i-search"/></svg></span><h3 data-i18n="nothingHere">N-am găsit nimic aici.</h3><p data-i18n="tryAnotherSearch">Încearcă un alt cuvânt sau explorează postările noi.</p><button class="button button-dark button-small" id="clear-search" data-i18n="clearSearch">Șterge căutarea</button></div>
+          <button class="load-more" id="load-more" data-i18n="youreAllCaughtUp">Ai ajuns la zi <span>✳</span></button>
+        </section>
+        <button class="button button-dark desktop-compose-bottom" id="desktop-compose"><svg class="icon"><use href="#i-plus"/></svg><span data-i18n="writePost">Scrie o postare</span></button>
+      </main>
+
+      <aside class="right-rail">
+        <div class="right-top"><button class="language-chip" id="language-button"><svg class="icon"><use href="#i-globe"/></svg><span id="current-language">Română</span><span class="chevron">⌄</span></button><button class="icon-button" id="theme-quick" aria-label="Change theme"><svg class="icon"><use href="#i-sun"/></svg></button><button class="login-button" id="open-login" data-i18n="logIn">Conectare</button></div>
+
+        <section class="welcome-card">
+          <div class="welcome-orbit orbit-one"></div><div class="welcome-orbit orbit-two"></div>
+          <span class="welcome-label"><svg class="icon"><use href="#i-sparkle"/></svg><span data-i18n="aLittleReminder">UN MIC REMINDER</span></span>
+          <h2 data-i18n="welcomeHeadline">Nu trebuie<br/>să ai totul<br/><em>rezolvat.</em></h2>
+          <p data-i18n="welcomeCopy">E suficient să fii aici, exact așa cum ești.</p>
+          <span class="welcome-signature">the wall<span>.</span></span>
+        </section>
+
+        <section class="side-section">
+          <div class="side-heading"><div><span class="eyebrow" data-i18n="happening">SE ÎNTÂMPLĂ</span><h3 data-i18n="trending">În conversație</h3></div><button class="dots-button" aria-label="More trends"><svg class="icon"><use href="#i-more"/></svg></button></div>
+          <a class="trend-item" href="#"><span class="trend-number">01</span><span><strong>#slowmornings</strong><small data-i18n="postsToday">1.2k postări azi</small></span><span class="trend-arrow">↗</span></a>
+          <a class="trend-item" href="#"><span class="trend-number">02</span><span><strong>#littlewins</strong><small data-i18n="peopleTalking">Oameni vorbesc despre asta</small></span><span class="trend-arrow">↗</span></a>
+          <a class="trend-item" href="#"><span class="trend-number">03</span><span><strong>#creativeprocess</strong><small data-i18n="postsToday2">846 postări azi</small></span><span class="trend-arrow">↗</span></a>
+          <button class="show-more" data-i18n="seeWhatsNew">Vezi ce mai e nou <svg class="icon"><use href="#i-arrow"/></svg></button>
+        </section>
+
+        <section class="side-section people-section">
+          <div class="side-heading"><div><span class="eyebrow" data-i18n="yourCircle">CERCUL TĂU</span><h3 data-i18n="friendsTitle">Prietenii tăi</h3></div></div>
+          <p class="friends-prompt" data-i18n="friendsPrompt">Adaugă persoane pe care le cunoști.</p>
+          <button class="button button-dark add-friends-button" data-open-friends><svg class="icon"><use href="#i-plus"/></svg><span data-i18n="addFriend">Adaugă un prieten</span></button>
+        </section>
+        <footer class="site-footer"><a href="#" data-i18n="about">Despre</a><a href="#" data-i18n="guidelines">Reguli</a><a href="#" data-i18n="privacy">Confidențialitate</a><span>© 2026 The Wall</span></footer>
+      </aside>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button class="mobile-nav-item is-active" data-view="home"><svg class="icon"><use href="#i-grid"/></svg><span data-i18n="navHome">Acasă</span></button>
+      <button class="mobile-nav-item" data-view="explore"><svg class="icon"><use href="#i-compass"/></svg><span data-i18n="navExplore">Explorează</span></button>
+      <button class="mobile-nav-item" data-view="friends"><svg class="icon"><use href="#i-users"/></svg><span data-i18n="navFriends">Prieteni</span></button>
+      <button class="mobile-create" id="mobile-compose" aria-label="Create post"><svg class="icon"><use href="#i-plus"/></svg></button>
+      <button class="mobile-nav-item notification-nav" data-view="notifications"><svg class="icon"><use href="#i-bell"/></svg><span data-i18n="navNotifications">Noutăți</span><span class="nav-badge hidden" id="mobile-notification-badge"></span></button>
+      <button class="mobile-nav-item" id="mobile-profile"><span class="avatar avatar-you">G</span><span data-i18n="profile">Profil</span></button>
+    </nav>
+
+    <div class="modal-backdrop hidden" id="modal-backdrop">
+      <section class="modal-card" id="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close icon-button" id="modal-close" aria-label="Close"><svg class="icon"><use href="#i-close"/></svg></button>
+        <div id="modal-content"></div>
+      </section>
+    </div>
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+  </body>
+</html>
