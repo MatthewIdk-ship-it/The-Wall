@@ -51,6 +51,7 @@ const featureTranslations = {
     accountCopy: "Editează numele afișat și fotografia de profil.",
     viewAccount: "Vezi contul",
     accountViewCopy: "Informațiile profilului tău și opțiunile contului.",
+    guestProfileCopy: "Conectează-te pentru a-ți personaliza profilul, a publica povești și a interacționa cu comunitatea.",
     editAccount: "Editează contul",
     signOutAccount: "Deconectează-te",
     displayName: "Nume afișat",
@@ -83,6 +84,7 @@ const featureTranslations = {
     accountCopy: "Update your display name and profile photo.",
     viewAccount: "View account",
     accountViewCopy: "Your profile information and account options.",
+    guestProfileCopy: "Sign in to personalize your profile, share stories, and connect with the community.",
     editAccount: "Edit account",
     signOutAccount: "Sign out",
     displayName: "Display name",
@@ -730,8 +732,10 @@ function openModal(content, variant = "") {
   document.getElementById("modal-content").innerHTML = content;
   backdrop.classList.toggle("settings-backdrop", variant === "settings");
   backdrop.classList.toggle("profile-backdrop", variant === "profile");
+  backdrop.classList.toggle("auth-backdrop", variant === "auth");
   card.classList.toggle("settings-card", variant === "settings");
   card.classList.toggle("profile-card", variant === "profile");
+  card.classList.toggle("auth-card", variant === "auth");
   backdrop.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   const firstInput = backdrop.querySelector("input, textarea, button:not(.modal-close)");
@@ -743,8 +747,10 @@ function closeModal() {
   backdrop.classList.add("hidden");
   backdrop.classList.remove("settings-backdrop");
   backdrop.classList.remove("profile-backdrop");
+  backdrop.classList.remove("auth-backdrop");
   document.getElementById("modal-card").classList.remove("settings-card");
   document.getElementById("modal-card").classList.remove("profile-card");
+  document.getElementById("modal-card").classList.remove("auth-card");
   document.body.style.overflow = "";
   if (profileImagePreviewUrl) {
     URL.revokeObjectURL(profileImagePreviewUrl);
@@ -753,7 +759,26 @@ function closeModal() {
 }
 
 function showProfile() {
-  if (!currentUser) return showLogin(false);
+  if (!currentUser) {
+    openModal(`<div class="profile-view profile-guest-view">
+      <section class="profile-guest-card">
+        <div class="profile-guest-cover"><span>${icon("sparkle")} THE WALL</span></div>
+        <div class="profile-guest-body">
+          ${avatarMarkup(state.name, "profile-view-avatar")}
+          <span class="modal-kicker">${icon("users")} ${t("profile")}</span>
+          <h2 class="modal-title">${t("viewAccount")}</h2>
+          <p class="modal-copy">${t("guestProfileCopy")}</p>
+          <div class="profile-view-actions">
+            <button class="button button-dark" id="guest-profile-login" type="button">${icon("user-check")}${t("continue")}</button>
+            <button class="profile-sign-out" id="guest-profile-signup" type="button">${icon("user-plus")}${t("createAccount")}</button>
+          </div>
+        </div>
+      </section>
+    </div>`, "profile");
+    document.getElementById("guest-profile-login").addEventListener("click", () => showLogin(false));
+    document.getElementById("guest-profile-signup").addEventListener("click", () => showLogin(true));
+    return;
+  }
   const profile = currentProfile || {
     display_name: state.name,
     handle: state.handle.replace(/^@/, ""),
@@ -852,9 +877,9 @@ function showLogin(signup = false, reset = false) {
   const submitText = reset ? t("sendReset") : signup ? t("createAccount") : t("continue");
   const note = window.wallBackend?.configured ? t("authBackendWarning") : t("authConfigMissing");
   const form = `<form class="form-stack" id="auth-form" data-mode="${formMode}" novalidate>${signup ? authField(t("fullName"), "name", "text", "name", "Guest", 'required maxlength="48"') : ""}${emailField}${passwordFields}<span class="form-error hidden" id="auth-form-error" role="alert"></span><button class="button button-dark" type="submit">${submitText} ${icon("arrow")}</button></form>`;
-  openModal(`<span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${title}</h2><p class="modal-copy">${description}</p>${form}<div class="${window.wallBackend?.configured ? "demo-warning" : "connection-warning"}">${icon(window.wallBackend?.configured ? "check" : "settings")}<span>${note}</span></div>
+  openModal(`<div class="auth-panel"><span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${title}</h2><p class="modal-copy">${description}</p>${form}<div class="${window.wallBackend?.configured ? "demo-warning" : "connection-warning"}">${icon(window.wallBackend?.configured ? "check" : "settings")}<span>${note}</span></div>
     ${!signup && !reset ? `<button class="modal-switch" id="reset-auth">${t("resetPassword")}</button>` : ""}
-    ${!reset ? `<button class="modal-switch" id="switch-auth">${signup ? t("haveAccount") : t("noAccount")} <strong>${signup ? t("logInLink") : t("createAccount")}</strong></button>` : `<button class="modal-switch" id="switch-auth"><strong>${t("logInLink")}</strong></button>`}`);
+    ${!reset ? `<button class="modal-switch" id="switch-auth">${signup ? t("haveAccount") : t("noAccount")} <strong>${signup ? t("logInLink") : t("createAccount")}</strong></button>` : `<button class="modal-switch" id="switch-auth"><strong>${t("logInLink")}</strong></button>`}</div>`, "auth");
   const formElement = document.getElementById("auth-form");
   const fieldNames = ["email", "password", "confirmPassword", "handle"];
   formElement.querySelector("[data-password-toggle]")?.addEventListener("click", (event) => {
