@@ -211,6 +211,7 @@ body.theme-dark .brand-mark { background:#fff; }body.theme-dark .brand-mark span
 .settings-tab:hover,.settings-tab.is-active { border-color:transparent; background:var(--surface-strong); }
 .settings-option { border:0; background:var(--surface-soft); }
 .settings-option:hover,.settings-option.is-selected { border-color:transparent; background:var(--surface-strong); }
+.modal-card.settings-card { background:transparent; }
 .modal-card.settings-card,.modal-card.profile-card,.modal-card.auth-card,.auth-panel { backdrop-filter:none; }
 
 @media (max-width: 700px) {
