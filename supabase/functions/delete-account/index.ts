@@ -14,8 +14,12 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 }
 
 Deno.serve(async (request) => {
-  if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (request.method !== "POST") return jsonResponse({ error: "Method not allowed." }, 405);
+  if (request.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed." }, 405);
+  }
 
   const authorization = request.headers.get("Authorization");
   const accessToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -48,9 +52,10 @@ Deno.serve(async (request) => {
     const bucket = admin.storage.from("post-images");
     const paths: string[] = [];
     const folders = [userId];
+
     while (folders.length) {
       const folder = folders.pop();
-      if (!folder) continue;
+      if (folder === undefined) continue;
       let offset = 0;
       const pageSize = 100;
       while (true) {
@@ -60,15 +65,17 @@ Deno.serve(async (request) => {
           sortBy: { column: "name", order: "asc" }
         });
         if (listError) throw listError;
-        for (const item of items) {
+        const listedItems = items ?? [];
+        for (const item of listedItems) {
           const itemPath = folder + "/" + item.name;
           if (item.id === null) folders.push(itemPath);
           else paths.push(itemPath);
         }
-        if (items.length < pageSize) break;
+        if (listedItems.length < pageSize) break;
         offset += pageSize;
       }
     }
+
     for (let index = 0; index < paths.length; index += 100) {
       const { error: removeError } = await bucket.remove(paths.slice(index, index + 100));
       if (removeError) throw removeError;
