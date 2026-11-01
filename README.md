@@ -1,8 +1,8 @@
-# The Wall
+**The Wall**
 
 The Wall Is A Social Website, Used To Communicate And Share Moments Between World-Wide Users
 
-## The Website Includes:
+The Website Includes:
 
 - An Nice Ui
 - Dark And White Modes
