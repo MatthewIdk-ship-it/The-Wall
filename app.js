@@ -941,7 +941,7 @@ function showLogin(signup = false, reset = false) {
   const emailField = authField(t("email"), "email", "email", "email", "guest@example.com", 'required maxlength="254"');
   const passwordFields = signup
     ? `${authField(t("username"), "handle", "text", "username", "guest", 'required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}"')}<small class="field-hint">${t("usernameHint")}</small> ${authPasswordField(t("password"), "password", "new-password", t("passwordHint"), 'required minlength="8" maxlength="72"', true)} ${authPasswordField(t("confirmPassword"), "confirmPassword", "new-password", "••••••••", 'required minlength="8" maxlength="72"')}`
-    : reset ? "" : authField(t("password"), "password", "password", "current-password", "••••••••", 'required maxlength="72"');
+    : reset ? "" : authPasswordField(t("password"), "password", "current-password", "••••••••", 'required maxlength="72"', true);
   const submitText = reset ? t("sendReset") : signup ? t("createAccount") : t("continue");
   const note = window.wallBackend?.configured ? t("authBackendWarning") : t("authConfigMissing");
   const form = `<form class="form-stack" id="auth-form" data-mode="${formMode}" novalidate>${signup ? authField(t("fullName"), "name", "text", "name", "Guest", 'required maxlength="48"') : ""}${emailField}${passwordFields}<span class="form-error hidden" id="auth-form-error" role="alert"></span><button class="button button-dark" type="submit">${submitText} ${icon("arrow")}</button></form>`;

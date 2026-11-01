@@ -204,8 +204,8 @@ body.theme-dark .brand-mark { background:#fff; }body.theme-dark .brand-mark span
 .profile-view-stats span,.profile-view-note { color:var(--muted); font-size:10px; }
 .profile-view-note { margin:0; }
 .profile-view-actions { padding:0 4px; }
-.modal-card.auth-card { border:0; outline:0; background:rgb(10 10 10 / 8%); backdrop-filter:blur(28px); }
-.auth-panel { border:0; background:color-mix(in srgb,var(--surface) 88%,transparent); box-shadow:0 24px 80px rgb(0 0 0 / 14%); }
+.modal-card.auth-card { border:0; outline:0; background:transparent; backdrop-filter:none; }
+.auth-panel { border:0; background:var(--surface); box-shadow:none; }
 .settings-pane { border:0; background:color-mix(in srgb,var(--surface) 82%,transparent); }
 .settings-tab { border:0; background:transparent; }
 .settings-tab:hover,.settings-tab.is-active { border-color:transparent; background:var(--surface-strong); }
