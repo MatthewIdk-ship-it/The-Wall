@@ -100,7 +100,9 @@ const featureTranslations = {
     profileFollowingCount: "Persoane urmărite",
     profileRecentActivity: "Activitate recentă",
     viewProfile: "Vezi profilul lui {name}",
-    profileNoPosts: "Nu există postări recente în feed."
+    profileNoPosts: "Nu există postări recente în feed.",
+    storiesFromFriends: "Prieteni",
+    noFriendStories: "Prietenii tăi nu au povești active acum."
   },
   en: {
     settingsTitle: "Your settings",
@@ -158,7 +160,9 @@ const featureTranslations = {
     profileFollowingCount: "People you follow",
     profileRecentActivity: "Recent activity",
     viewProfile: "View {name}'s profile",
-    profileNoPosts: "There are no recent posts in the feed."
+    profileNoPosts: "There are no recent posts in the feed.",
+    storiesFromFriends: "Friends",
+    noFriendStories: "Your friends don't have active stories right now."
   }
 };
 
@@ -221,6 +225,7 @@ state.name = defaults.name;
 state.handle = defaults.handle;
 let posts = loadPosts();
 let stories = [];
+let friendStoriesOnly = true;
 let friends = loadFriends();
 let currentUser = null;
 let currentProfile = null;
@@ -251,7 +256,7 @@ function t(key) {
 function languageOptionLabel(code) {
   const nativeName = translations[code].languageName;
   const englishName = englishLanguageNames[code];
-  return `<span class="language-option-copy"><strong>${nativeName}</strong><small>${englishName}</small></span>`;
+  return `<span class="language-option-copy"><strong>${nativeName}</strong><span aria-hidden="true">/</span><small>${englishName}</small></span>`;
 }
 
 function systemLanguage() {
@@ -300,7 +305,7 @@ function saveFriends() {
 }
 
 function icon(name) {
-  return `<svg class="icon" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+  return `<svg class="icon" aria-hidden="true"><use href="icons.svg#i-${name}"></use></svg>`;
 }
 
 function applyTheme() {
@@ -311,7 +316,7 @@ function applyTheme() {
   const themeButton = document.getElementById("theme-quick");
   const darkMode = document.body.classList.contains("theme-dark");
   document.querySelector('meta[name="theme-color"]').content = darkMode ? "#000000" : "#ffffff";
-  themeButton.querySelector("use").setAttribute("href", darkMode ? "#i-sun" : "#i-moon");
+  themeButton.querySelector("use").setAttribute("href", `icons.svg#i-${darkMode ? "sun" : "moon"}`);
   themeButton.setAttribute("aria-label", t(darkMode ? "themeLight" : "themeDark"));
 }
 
@@ -398,21 +403,32 @@ function renderTrends() {
     return;
   }
   const visible = showAllTrends ? trends : trends.slice(0, 3);
-  list.innerHTML = visible.map(([tag, count], index) => `<button class="trend-item" type="button" data-trend-tag="#${escapeHtml(tag)}"><span class="trend-number">${String(index + 1).padStart(2, "0")}</span><span><strong>#${escapeHtml(tag)}</strong><small>${escapeHtml(t("postsCount").replace("{count}", new Intl.NumberFormat(activeLanguageCode()).format(count)))}</small></span><span class="trend-arrow">↗</span></button>`).join("");
+  list.innerHTML = visible.map(([tag, count], index) => `<button class="trend-item" type="button" data-trend-tag="#${escapeHtml(tag)}"><span class="trend-number">${String(index + 1).padStart(2, "0")}</span><span><strong>#${escapeHtml(tag)}</strong><small>${escapeHtml(t("postsCount").replace("{count}", new Intl.NumberFormat(activeLanguageCode()).format(count)))}</small></span><span class="trend-arrow">${icon("arrow-up-right")}</span></button>`).join("");
 }
 
 function renderStories() {
   const container = document.getElementById("stories-list");
   if (!container) return;
+  const visibleStories = getVisibleStories();
   const addStory = `<button class="story story-add" id="add-story" type="button"><span class="story-ring">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<span class="story-add-icon">${icon("plus")}</span></span><span>${t("yourStory")}</span></button>`;
-  const storyItems = stories.map((story, index) => {
-    const image = story.imageUrl
-      ? `<img src="${escapeHtml(story.imageUrl)}" alt="" loading="lazy"/>`
-      : avatarMarkup(story.authorName, "friend-avatar", story.avatarUrl);
+  const storyItems = visibleStories.map((story, index) => {
+    const image = avatarMarkup(story.authorName, "friend-avatar", story.avatarUrl);
     return `<button class="story" type="button" data-story-index="${index}" aria-label="${escapeHtml(story.authorName)}: ${escapeHtml(story.body || t("storyTextLabel"))}"><span class="story-ring">${image}</span><span>${escapeHtml(story.authorName)}</span></button>`;
   }).join("");
-  container.innerHTML = `${addStory}${storyItems}`;
-  document.getElementById("see-all-stories").classList.toggle("hidden", stories.length < 2);
+  const emptyState = friendStoriesOnly && visibleStories.length === 0
+    ? `<span class="stories-empty">${t("noFriendStories")}</span>`
+    : "";
+  container.innerHTML = `${addStory}${storyItems}${emptyState}`;
+  document.getElementById("see-all-stories").classList.toggle("hidden", visibleStories.length < 2);
+  const friendsFilter = document.getElementById("stories-friends-filter");
+  friendsFilter?.classList.toggle("is-active", friendStoriesOnly);
+  friendsFilter?.setAttribute("aria-pressed", String(friendStoriesOnly));
+}
+
+function getVisibleStories() {
+  return friendStoriesOnly
+    ? stories.filter((story) => followedIds.has(story.authorId))
+    : stories;
 }
 
 function mapRemoteStory(row) {
@@ -431,23 +447,25 @@ function mapRemoteStory(row) {
 }
 
 function renderStoryViewer() {
-  const story = stories[currentStoryIndex];
+  const visibleStories = getVisibleStories();
+  const story = visibleStories[currentStoryIndex];
   if (!story) return closeModal();
   const image = story.imageUrl
     ? `<img class="story-viewer-image" src="${escapeHtml(story.imageUrl)}" alt="${t("postImage")}"/>`
     : "";
-  const controls = stories.length > 1
-    ? `<div class="story-viewer-nav"><button type="button" data-story-previous ${currentStoryIndex === 0 ? "disabled" : ""}>${t("storyPrevious")}</button><button type="button" data-story-next ${currentStoryIndex === stories.length - 1 ? "disabled" : ""}>${t("storyNext")}</button></div>`
+  const controls = visibleStories.length > 1
+    ? `<div class="story-viewer-nav"><button type="button" data-story-previous ${currentStoryIndex === 0 ? "disabled" : ""}>${t("storyPrevious")}</button><button type="button" data-story-next ${currentStoryIndex === visibleStories.length - 1 ? "disabled" : ""}>${t("storyNext")}</button></div>`
     : "";
   openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${formatRichText(story.body)}</p>` : ""}${controls}`);
 }
 
 function showStoryList() {
-  if (!stories.length) {
+  const visibleStories = getVisibleStories();
+  if (!visibleStories.length) {
     showToast(t("noStories"));
     return;
   }
-  openModal(`<span class="modal-kicker">${t("littleMoments")}</span><h2 class="modal-title">${t("stories")}</h2><div class="story-list">${stories.map((story, index) => `<button class="language-option" type="button" data-story-index="${index}"><span>${escapeHtml(story.authorName)} · ${escapeHtml(formatPostTime(story.createdAt))}</span>${icon("arrow")}</button>`).join("")}</div>`);
+  openModal(`<span class="modal-kicker">${t("littleMoments")}</span><h2 class="modal-title">${t("stories")}</h2><div class="story-list">${visibleStories.map((story, index) => `<button class="language-option" type="button" data-story-index="${index}"><span>${escapeHtml(story.authorName)} · ${escapeHtml(formatPostTime(story.createdAt))}</span>${icon("arrow")}</button>`).join("")}</div>`);
 }
 
 function showStoryComposer() {
@@ -1170,9 +1188,9 @@ function showLogin(signup = false, reset = false) {
 
 function showSettings(activeTab = "account") {
   const themes = [
-    ["light", "sun", "themeLight", "themeLightCopy"],
+    ["system", "monitor", "themeSystem", "themeSystemCopy"],
     ["dark", "moon", "themeDark", "themeDarkCopy"],
-    ["system", "monitor", "themeSystem", "themeSystemCopy"]
+    ["light", "sun", "themeLight", "themeLightCopy"]
   ];
   const languages = Object.keys(translations);
   const accountPane = currentUser
@@ -1769,9 +1787,14 @@ document.addEventListener("click", async (event) => {
     renderStoryViewer();
     return;
   }
-  if (event.target.closest("[data-story-next]") && currentStoryIndex < stories.length - 1) {
+  if (event.target.closest("[data-story-next]") && currentStoryIndex < getVisibleStories().length - 1) {
     currentStoryIndex += 1;
     renderStoryViewer();
+    return;
+  }
+  if (event.target.closest("#stories-friends-filter")) {
+    friendStoriesOnly = !friendStoriesOnly;
+    renderStories();
     return;
   }
   if (event.target.closest("#see-all-stories")) {
@@ -1805,6 +1828,7 @@ document.addEventListener("click", async (event) => {
       followedIds.delete(unfollowButton.dataset.unfollow);
       friends = friends.filter((friend) => friend.id !== unfollowButton.dataset.unfollow);
       renderFriends();
+      renderStories();
       showToast(t("friendRemoved"));
     } catch (error) {
       showDataError(error);
@@ -1900,6 +1924,7 @@ document.addEventListener("click", async (event) => {
         else followedIds.add(post.authorId);
         friends = await window.wallBackend.getFollowingProfiles();
         renderPosts();
+        renderStories();
         showToast(t(following ? "unfollowed" : "subscribed"));
       } catch (error) {
         if (!currentUser) showLogin();
