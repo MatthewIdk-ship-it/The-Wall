@@ -57,6 +57,12 @@ const featureTranslations = {
     guestSignupCta: "Înscrie-te pe The Wall",
     editAccount: "Editează contul",
     signOutAccount: "Deconectează-te",
+    deleteAccount: "Șterge contul",
+    deleteAccountWarning: "Ștergerea contului este definitivă. Profilul, postările, poveștile și comentariile tale vor fi șterse.",
+    deleteAccountConfirm: "Sigur vrei să ștergi definitiv contul și datele asociate? Acțiunea nu poate fi anulată.",
+    deleteAccountError: "Nu am putut șterge contul. Încearcă din nou sau contactează administratorul.",
+    deleteAccountSuccess: "Contul tău a fost șters.",
+    deleteAccountStorageWarning: "Contul a fost șters, dar unele imagini nu au putut fi eliminate.",
     displayName: "Nume afișat",
     profilePhoto: "Fotografie de profil",
     profileBanner: "Banner de profil (JPG)",
@@ -109,6 +115,12 @@ const featureTranslations = {
     guestSignupCta: "Join The Wall",
     editAccount: "Edit account",
     signOutAccount: "Sign out",
+    deleteAccount: "Delete account",
+    deleteAccountWarning: "Deleting your account is permanent. Your profile, posts, stories, and comments will be deleted.",
+    deleteAccountConfirm: "Are you sure you want to permanently delete your account and its data? This cannot be undone.",
+    deleteAccountError: "We couldn't delete your account. Please try again or contact the administrator.",
+    deleteAccountSuccess: "Your account has been deleted.",
+    deleteAccountStorageWarning: "Your account was deleted, but some images could not be removed.",
     displayName: "Display name",
     profilePhoto: "Profile photo",
     profileBanner: "Profile banner (JPG)",
@@ -318,7 +330,6 @@ function applyLanguage() {
   const search = document.getElementById("search-input");
   search.placeholder = t("searchPlaceholder");
   search.setAttribute("aria-label", t("searchLabel"));
-  document.getElementById("current-language").textContent = t("languageName");
   for (const formatting of document.querySelectorAll(".composer-formatting")) {
     formatting.setAttribute("aria-label", t("formatting"));
     for (const button of formatting.querySelectorAll("[data-format]")) {
@@ -1174,7 +1185,7 @@ function showSettings(activeTab = "account") {
       ["appearance", "sun", "appearanceTab"],
       ["language", "globe", "languageTab"]
     ].map(([tab, symbol, label]) => `<button class="settings-tab ${activeTab === tab ? "is-active" : ""}" type="button" data-settings-tab="${tab}">${icon(symbol)}<span>${t(label)}</span></button>`).join("")}</nav>
-    <section class="settings-pane ${activeTab === "account" ? "" : "hidden"}"><h3>${t("accountTab")}</h3><p class="settings-pane-copy">${t("accountCopy")}</p>${accountPane}</section>
+    <section class="settings-pane ${activeTab === "account" ? "" : "hidden"}"><h3>${t("accountTab")}</h3><p class="settings-pane-copy">${t("accountCopy")}</p>${accountPane}${currentUser ? `<div class="settings-danger-zone"><p>${t("deleteAccountWarning")}</p><span class="form-error hidden" id="settings-account-delete-error" role="alert"></span><button class="button button-danger" id="settings-delete-account" type="button">${t("deleteAccount")}</button></div>` : ""}</section>
     <section class="settings-pane ${activeTab === "appearance" ? "" : "hidden"}"><h3>${t("appearanceTab")}</h3><p class="settings-pane-copy">${t("themeDescription")}</p><div class="settings-option-grid">${themes.map(([value, symbol, name, copy]) => `<button class="settings-option ${state.theme === value ? "is-selected" : ""}" type="button" data-theme="${value}">${icon(symbol)}<strong>${t(name)}</strong><small>${t(copy)}</small>${icon("check")}</button>`).join("")}</div></section>
     <section class="settings-pane ${activeTab === "language" ? "" : "hidden"}"><h3>${t("languageTab")}</h3><p class="settings-pane-copy">${t("madeWithCare")}</p><div class="settings-option-grid settings-language-grid"><button class="settings-option ${state.language === "system" ? "is-selected" : ""}" type="button" data-settings-language="system"><strong>${t("systemLanguage")}</strong><small>${translations[systemLanguage()].languageName}</small>${icon("check")}</button>${languages.map((code) => `<button class="settings-option ${state.language === code ? "is-selected" : ""}" type="button" data-settings-language="${code}">${languageOptionLabel(code)}${icon("check")}</button>`).join("")}</div></section>
     </div>`, "settings");
@@ -1195,6 +1206,23 @@ function showSettings(activeTab = "account") {
     showToast(t("languageChanged"));
   }));
   document.getElementById("settings-login")?.addEventListener("click", () => showLogin(false));
+  document.getElementById("settings-delete-account")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    if (!currentUser || !window.confirm(t("deleteAccountConfirm"))) return;
+    const error = document.getElementById("settings-account-delete-error");
+    button.disabled = true;
+    error.classList.add("hidden");
+    try {
+      const result = await window.wallBackend.deleteAccount();
+      closeModal();
+      showToast(t(result.storageCleanupFailed ? "deleteAccountStorageWarning" : "deleteAccountSuccess"));
+    } catch (deleteError) {
+      console.error("Unable to delete the account.", deleteError);
+      error.textContent = t("deleteAccountError");
+      error.classList.remove("hidden");
+      button.disabled = false;
+    }
+  });
   const form = document.getElementById("settings-account-form");
   const avatarInput = form?.elements.namedItem("avatar");
   const bannerInput = form?.elements.namedItem("banner");
@@ -1896,7 +1924,6 @@ document.addEventListener("click", async (event) => {
     } else showLogin(false);
   }
   if (event.target.closest("#desktop-compose") || event.target.closest("#mobile-compose")) focusComposer();
-  if (event.target.closest("#language-button")) showLanguages();
   if (event.target.closest("[data-open-languages]")) showLanguages();
   if (event.target.closest("[data-open-friends]")) showAddFriend();
   if (event.target.closest("#theme-quick")) {

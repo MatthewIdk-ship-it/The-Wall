@@ -53,6 +53,17 @@
       const { error } = await requireClient().auth.signOut();
       if (error) throw error;
     },
+    async deleteAccount() {
+      const api = requireClient();
+      const { data: sessionData, error: sessionError } = await api.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData.session) throw new Error("You must be signed in to delete your account.");
+      const { data, error } = await api.functions.invoke("delete-account");
+      if (error) throw error;
+      const { error: signOutError } = await api.auth.signOut({ scope: "local" });
+      if (signOutError) throw signOutError;
+      return data;
+    },
     async sendPasswordReset(email) {
       const redirectTo = window.location.href.split(/[?#]/, 1)[0];
       const { error } = await requireClient().auth.resetPasswordForEmail(email, { redirectTo });
@@ -81,7 +92,9 @@
       };
       try {
         if (image) avatarUrl = await uploadProfileImage(image);
-        if (bannerImage) bannerUrl = await uploadProfileImage(bannerImage);
+        if (bannerImage) {
+          bannerUrl = await uploadProfileImage(bannerImage);
+        }
         const updates = { display_name: name };
         if (updateHandle) updates.handle = normalizedHandle;
         if (avatarUrl) updates.avatar_url = avatarUrl;
