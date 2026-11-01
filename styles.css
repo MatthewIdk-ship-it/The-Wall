@@ -176,6 +176,7 @@ body.theme-dark .brand-mark { background:#fff; }body.theme-dark .brand-mark span
 .composer-formatting button { display:grid; width:30px; height:29px; place-items:center; border:0; border-radius:7px; background:var(--surface-soft); color:var(--muted-strong); cursor:pointer; }
 .composer-formatting button:hover { background:var(--surface-strong); color:var(--text); }
 .composer-formatting .icon { width:15px; height:15px; }
+.story-formatting { margin:8px 0 0; }
 .post-delete-button { display:grid; flex:0 0 auto; width:30px; height:30px; place-items:center; margin-left:auto; border:0; border-radius:7px; background:transparent; color:var(--muted); cursor:pointer; }
 .post-delete-button:hover { background:#fff1f1; color:#b42318; }
 .post-delete-button .icon { width:16px; height:16px; }

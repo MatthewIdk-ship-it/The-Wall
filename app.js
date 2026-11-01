@@ -298,12 +298,13 @@ function applyLanguage() {
   search.placeholder = t("searchPlaceholder");
   search.setAttribute("aria-label", t("searchLabel"));
   document.getElementById("current-language").textContent = t("languageName");
-  const formatting = document.querySelector(".composer-formatting");
-  formatting.setAttribute("aria-label", t("formatting"));
-  for (const button of formatting.querySelectorAll("[data-format]")) {
-    const label = t(button.dataset.format);
-    button.setAttribute("aria-label", label);
-    button.title = label;
+  for (const formatting of document.querySelectorAll(".composer-formatting")) {
+    formatting.setAttribute("aria-label", t("formatting"));
+    for (const button of formatting.querySelectorAll("[data-format]")) {
+      const label = t(button.dataset.format);
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    }
   }
   updateIdentityUI();
   updateNotificationBadge();
@@ -402,7 +403,7 @@ function renderStoryViewer() {
   const controls = stories.length > 1
     ? `<div class="story-viewer-nav"><button type="button" data-story-previous ${currentStoryIndex === 0 ? "disabled" : ""}>${t("storyPrevious")}</button><button type="button" data-story-next ${currentStoryIndex === stories.length - 1 ? "disabled" : ""}>${t("storyNext")}</button></div>`
     : "";
-  openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${escapeHtml(story.body)}</p>` : ""}${controls}`);
+  openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${formatRichText(story.body)}</p>` : ""}${controls}`);
 }
 
 function showStoryList() {
@@ -426,11 +427,19 @@ function showStoryComposer() {
       <button type="button" data-story-mode="photo" aria-pressed="false">${t("storyPhotoMode")}</button>
       <button type="button" data-story-mode="both" aria-pressed="false">${t("storyBothMode")}</button>
     </div>
-    <label class="form-field story-text-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label>
+    <div class="story-text-field">
+      <label class="form-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label>
+      <div class="composer-formatting story-formatting" role="group" aria-label="${t("formatting")}">
+        <span>${t("formatting")}</span>
+        <button type="button" data-format="bold" aria-label="${t("bold")}" title="${t("bold")}">${icon("bold")}</button>
+        <button type="button" data-format="italic" aria-label="${t("italic")}" title="${t("italic")}">${icon("italic")}</button>
+      </div>
+    </div>
     <label class="story-form-image story-image-field hidden">${t("storyImageLabel")}<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label>
     <span class="form-error hidden" id="story-form-error" role="alert"></span><button class="button button-dark" type="submit">${t("publish")}</button></form>`);
   const form = document.getElementById("story-form");
   const imageInput = form.elements.namedItem("image");
+  installTextFormatting(form.elements.namedItem("body"), form.querySelector(".story-formatting"));
   form.querySelectorAll("[data-story-mode]").forEach((button) => button.addEventListener("click", () => {
     selectedStoryMode = button.dataset.storyMode;
     form.querySelectorAll("[data-story-mode]").forEach((option) => {
@@ -600,10 +609,7 @@ async function renderNotifications() {
 }
 
 function renderPost(post) {
-  const body = escapeHtml(post.body)
-    .replace(/\*\*\*(.+?)\*\*\*/gs, "<strong><em>$1</em></strong>")
-    .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/gs, "<em>$1</em>")
+  const body = formatRichText(post.body)
     .replace(/(^|\s)(#[\p{L}\d_]+)/gu, '$1<a href="#" class="post-tag">$2</a>');
   const art = post.imageUrl
     ? `<img class="post-image" src="${escapeHtml(post.imageUrl)}" alt="${t("postImage")}" loading="lazy"/>`
@@ -671,6 +677,13 @@ function updateAccountButton() {
   if (!button) return;
   button.textContent = currentUser ? t("logOut") : t("logIn");
   button.setAttribute("aria-label", currentUser ? t("logOut") : t("logIn"));
+}
+
+function formatRichText(value) {
+  return escapeHtml(value)
+    .replace(/\*\*\*(.+?)\*\*\*/gs, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/gs, "<em>$1</em>");
 }
 
 function formatPostTime(value) {
@@ -1282,34 +1295,7 @@ function installComposer() {
     resizeTextarea(textarea);
     void updateMentionSuggestions(textarea);
   });
-  const formatting = form.querySelector(".composer-formatting");
-  formatting.addEventListener("mousedown", (event) => {
-    if (event.target.closest("[data-format]")) event.preventDefault();
-  });
-  formatting.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-format]");
-    if (!button) return;
-    const marker = button.dataset.format === "bold" ? "**" : "*";
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selection = textarea.value.slice(start, end);
-    const leadingMarkers = selection.match(/^\*+/)?.[0].length || 0;
-    const trailingMarkers = selection.match(/\*+$/)?.[0].length || 0;
-    const isFormatted = marker === "*"
-      ? leadingMarkers === 1 && trailingMarkers === 1 || leadingMarkers === 3 && trailingMarkers === 3
-      : leadingMarkers >= 2 && trailingMarkers >= 2;
-    const replacement = isFormatted
-      ? selection.slice(marker.length, -marker.length)
-      : `${marker}${selection}${marker}`;
-    const nextValue = `${textarea.value.slice(0, start)}${replacement}${textarea.value.slice(end)}`;
-    if (nextValue.length > textarea.maxLength) return;
-    textarea.value = nextValue;
-    const selectionStart = isFormatted ? start : start + marker.length;
-    const selectionEnd = isFormatted ? start + replacement.length : selectionStart + selection.length;
-    textarea.focus();
-    textarea.setSelectionRange(selectionStart, selectionEnd);
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  });
+  installTextFormatting(textarea, form.querySelector(".composer-formatting"));
   resizeTextarea(textarea);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1345,6 +1331,36 @@ function resizeTextarea(textarea) {
   const maxHeight = Number.parseFloat(getComputedStyle(textarea).maxHeight) || Infinity;
   textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
   textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+}
+
+function installTextFormatting(textarea, formatting) {
+  formatting.addEventListener("mousedown", (event) => {
+    if (event.target.closest("[data-format]")) event.preventDefault();
+  });
+  formatting.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-format]");
+    if (!button) return;
+    const marker = button.dataset.format === "bold" ? "**" : "*";
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selection = textarea.value.slice(start, end);
+    const leadingMarkers = selection.match(/^\*+/)?.[0].length || 0;
+    const trailingMarkers = selection.match(/\*+$/)?.[0].length || 0;
+    const isFormatted = marker === "*"
+      ? leadingMarkers === 1 && trailingMarkers === 1 || leadingMarkers === 3 && trailingMarkers === 3
+      : leadingMarkers >= 2 && trailingMarkers >= 2;
+    const replacement = isFormatted
+      ? selection.slice(marker.length, -marker.length)
+      : `${marker}${selection}${marker}`;
+    const nextValue = `${textarea.value.slice(0, start)}${replacement}${textarea.value.slice(end)}`;
+    if (nextValue.length > textarea.maxLength) return;
+    textarea.value = nextValue;
+    const selectionStart = isFormatted ? start : start + marker.length;
+    const selectionEnd = isFormatted ? start + replacement.length : selectionStart + selection.length;
+    textarea.focus();
+    textarea.setSelectionRange(selectionStart, selectionEnd);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  });
 }
 
 async function updateMentionSuggestions(textarea) {
