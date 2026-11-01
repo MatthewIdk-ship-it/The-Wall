@@ -87,7 +87,9 @@ const featureTranslations = {
     deletePostError: "Nu am putut șterge postarea.",
     profilePostsInFeed: "Postări recente în feed",
     profileFollowingCount: "Persoane urmărite",
-    profileRecentActivity: "Activitate recentă"
+    profileRecentActivity: "Activitate recentă",
+    viewProfile: "Vezi profilul lui {name}",
+    profileNoPosts: "Nu există postări recente în feed."
   },
   en: {
     settingsTitle: "Your settings",
@@ -134,7 +136,9 @@ const featureTranslations = {
     deletePostError: "We couldn't delete this post.",
     profilePostsInFeed: "Recent posts in feed",
     profileFollowingCount: "People you follow",
-    profileRecentActivity: "Recent activity"
+    profileRecentActivity: "Recent activity",
+    viewProfile: "View {name}'s profile",
+    profileNoPosts: "There are no recent posts in the feed."
   }
 };
 
@@ -624,12 +628,46 @@ function renderPost(post) {
   const saved = currentPostState.saved.has(post.id) || post.saved;
   const isFollowing = followedIds.has(post.authorId);
   return `<article class="post-card" data-post-id="${escapeHtml(post.id)}">
-    <header class="post-head">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""}" data-action="follow" aria-label="${t(isFollowing ? "subscribed" : "subscribe")}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(isFollowing ? "subscribed" : "subscribe")}</span></button>` : ""}${canDelete ? `<button class="post-delete-button" data-action="delete" type="button" aria-label="${t("deletePost")}" title="${t("deletePost")}">${icon("trash")}</button>` : ""}</header>
+    <header class="post-head"><button class="post-profile-trigger" type="button" ${post.authorId ? `data-post-profile-id="${escapeHtml(post.authorId)}"` : "disabled"} aria-label="${escapeHtml(t("viewProfile").replace("{name}", post.name))}">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span></button>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""}" data-action="follow" aria-label="${t(isFollowing ? "subscribed" : "subscribe")}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(isFollowing ? "subscribed" : "subscribe")}</span></button>` : ""}${canDelete ? `<button class="post-delete-button" data-action="delete" type="button" aria-label="${t("deletePost")}" title="${t("deletePost")}">${icon("trash")}</button>` : ""}</header>
     <div class="post-body"><p>${body}</p></div>${art}
     <div class="post-actions"><button class="post-action ${liked ? "is-liked" : ""}" data-action="like" aria-label="${liked ? t("unlike") : t("like")}">${icon("heart")}<span>${post.likes}</span></button><button class="post-action" data-action="comment">${icon("message")}<span>${post.comments} ${t("comments")}</span></button><button class="post-action post-save-action ${saved ? "is-saved" : ""}" data-action="save" aria-label="${saved ? t("unsave") : t("savePost")}">${icon(saved ? "bookmark-fill" : "bookmark")}<span>${t("savePost")}</span></button><button class="post-action share-action" data-action="share">${icon("send")}<span>${t("share")}</span></button></div>
     <form class="post-comment" data-comment-form>${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<textarea name="comment" maxlength="500" rows="1" placeholder="${t("comment")}" aria-label="${t("comment")}"></textarea><button type="submit" aria-label="${t("commentButton")}">${icon("send")}</button></form>
     ${commentItems ? `<div class="comment-list">${commentItems}</div>` : ""}
   </article>`;
+}
+
+function showPostAuthorProfile(authorId) {
+  const authorPosts = posts.filter((post) => post.authorId === authorId);
+  const authorPost = authorPosts[0];
+  if (!authorPost) return;
+  if (currentUser && authorId === currentUser.id) {
+    showProfile();
+    return;
+  }
+  const postItems = authorPosts.map((post) => {
+    const image = post.imageUrl
+      ? `<img class="profile-post-image" src="${escapeHtml(post.imageUrl)}" alt="${t("postImage")}" loading="lazy"/>`
+      : "";
+    return `<article class="profile-post-item"><small>${escapeHtml(post.time)}</small>${post.body ? `<p>${formatRichText(post.body)}</p>` : ""}${image}</article>`;
+  }).join("");
+  const profile = {
+    display_name: authorPost.name,
+    handle: String(authorPost.handle || "").replace(/^@/, ""),
+    avatar_url: authorPost.avatarUrl
+  };
+  openModal(`<div class="profile-view profile-public-view">
+    <section class="profile-view-card">
+      <div class="profile-hero-banner"><span>${icon("sparkle")} THE WALL</span><span class="profile-hero-orbit" aria-hidden="true">✳</span></div>
+      <div class="profile-view-content">
+        <div class="profile-view-identity">
+          ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
+          <div class="profile-view-details"><h2>${escapeHtml(profile.display_name)}</h2><p>@${escapeHtml(profile.handle)}</p></div>
+        </div>
+        <div class="profile-view-stats"><div><strong>${authorPosts.length}</strong><span>${t("profilePostsInFeed")}</span></div></div>
+      </div>
+    </section>
+    <section class="profile-posts"><h3>${t("profileRecentActivity")}</h3>${postItems || `<p class="profile-view-note">${t("profileNoPosts")}</p>`}</section>
+  </div>`, "profile");
 }
 
 function updateViewTitle() {
@@ -1760,6 +1798,11 @@ document.addEventListener("click", async (event) => {
         else showDataError(error);
       }
     }
+    return;
+  }
+  const profileTrigger = event.target.closest("[data-post-profile-id]");
+  if (profileTrigger) {
+    showPostAuthorProfile(profileTrigger.dataset.postProfileId);
     return;
   }
   if (event.target.closest("#open-settings") || event.target.closest("#open-settings-bottom") || event.target.closest("#open-settings-mobile")) showSettings();
