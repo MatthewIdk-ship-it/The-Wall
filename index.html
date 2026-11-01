@@ -15,11 +15,11 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261020-1732" />
+    <link rel="stylesheet" href="styles.css?v=20261101-3" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js" defer></script>
     <script src="backend.js" defer></script>
-    <script src="app.js?v=20261020-1732" defer></script>
+    <script src="app.js?v=20261101-3" defer></script>
   </head>
   <body>
     <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -52,6 +52,9 @@
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
       <symbol id="i-bookmark-fill" viewBox="0 0 24 24"><path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" fill="currentColor" stroke="currentColor"/></symbol>
+      <symbol id="i-bold" viewBox="0 0 24 24"><path d="M7 5h6a4 4 0 0 1 0 8H7zM7 13h7a4 4 0 0 1 0 8H7z"/></symbol>
+      <symbol id="i-italic" viewBox="0 0 24 24"><path d="M14 4h6M4 20h6M15 4 9 20"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6m4-6v6M5 7l1 14h12l1-14M9 7V4h6v3"/></symbol>
     </svg>
 
     <div class="app-shell">
@@ -101,6 +104,11 @@
             <form class="feed-composer-form" id="feed-composer-form">
               <div class="composer-top"><span class="avatar avatar-you">G</span><textarea class="composer-prompt" id="composer-prompt" name="body" maxlength="1000" data-i18n-placeholder="composerPrompt" placeholder="Ce ai vrea să împărtășești?" aria-label="Post text"></textarea></div>
               <div class="upload-preview hidden" id="upload-preview"></div>
+              <div class="composer-formatting" role="group" aria-label="Formatare text">
+                <span data-i18n="formatting">Formatare</span>
+                <button type="button" data-format="bold" aria-label="Aldin" title="Aldin"><svg class="icon"><use href="#i-bold"/></svg></button>
+                <button type="button" data-format="italic" aria-label="Cursiv" title="Cursiv"><svg class="icon"><use href="#i-italic"/></svg></button>
+              </div>
               <div class="composer-bottom">
                 <div class="composer-tools">
                   <label class="composer-tool" for="image-input"><svg class="icon"><use href="#i-image"/></svg><span data-i18n="addPhoto">Adaugă o fotografie</span></label>

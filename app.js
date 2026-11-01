@@ -65,6 +65,9 @@ const featureTranslations = {
     storyTextLabel: "Textul poveștii",
     storyTextPlaceholder: "Ce vrei să împărtășești?",
     storyImageLabel: "Fotografie (opțional)",
+    storyTextMode: "Doar text",
+    storyPhotoMode: "Doar fotografie",
+    storyBothMode: "Text și fotografie",
     storyEmpty: "Adaugă text sau o fotografie pentru poveste.",
     storyPublished: "Povestea ta va fi vizibilă timp de 24 de ore.",
     storyUploadError: "Nu am putut publica povestea. Încearcă din nou.",
@@ -73,7 +76,18 @@ const featureTranslations = {
     noStories: "Nu există povești active acum.",
     storyMigrationRequired: "Aplică migrarea Supabase pentru povești înainte să le folosești.",
     trendingEmpty: "Postările recente nu conțin hashtaguri încă.",
-    postsCount: "{count} postări"
+    postsCount: "{count} postări",
+    formatting: "Formatare",
+    bold: "Aldin",
+    italic: "Cursiv",
+    deletePost: "Șterge postarea",
+    deletePostConfirm: "Sigur vrei să ștergi această postare? Acțiunea nu poate fi anulată.",
+    postDeleted: "Postarea a fost ștearsă.",
+    postDeletedImageWarning: "Postarea a fost ștearsă, dar fotografia nu a putut fi eliminată.",
+    deletePostError: "Nu am putut șterge postarea.",
+    profilePostsInFeed: "Postări recente în feed",
+    profileFollowingCount: "Persoane urmărite",
+    profileRecentActivity: "Activitate recentă"
   },
   en: {
     settingsTitle: "Your settings",
@@ -98,6 +112,9 @@ const featureTranslations = {
     storyTextLabel: "Story text",
     storyTextPlaceholder: "What would you like to share?",
     storyImageLabel: "Photo (optional)",
+    storyTextMode: "Text only",
+    storyPhotoMode: "Photo only",
+    storyBothMode: "Text and photo",
     storyEmpty: "Add text or a photo to your story.",
     storyPublished: "Your story will be visible for 24 hours.",
     storyUploadError: "We couldn't publish your story. Please try again.",
@@ -106,7 +123,18 @@ const featureTranslations = {
     noStories: "There are no active stories yet.",
     storyMigrationRequired: "Apply the Supabase stories migration before using stories.",
     trendingEmpty: "Recent posts don't contain hashtags yet.",
-    postsCount: "{count} posts"
+    postsCount: "{count} posts",
+    formatting: "Formatting",
+    bold: "Bold",
+    italic: "Italic",
+    deletePost: "Delete post",
+    deletePostConfirm: "Are you sure you want to delete this post? This can't be undone.",
+    postDeleted: "Post deleted.",
+    postDeletedImageWarning: "Post deleted, but its photo couldn't be removed.",
+    deletePostError: "We couldn't delete this post.",
+    profilePostsInFeed: "Recent posts in feed",
+    profileFollowingCount: "People you follow",
+    profileRecentActivity: "Recent activity"
   }
 };
 
@@ -179,6 +207,7 @@ let notificationChannelCleanup = null;
 let selectedImage = null;
 let imagePreviewUrl = null;
 let selectedStoryImage = null;
+let selectedStoryMode = "text";
 let mentionRequest = 0;
 let refreshGeneration = 0;
 let currentStoryIndex = 0;
@@ -256,12 +285,11 @@ function applyTheme() {
 }
 
 function applyLanguage() {
-  const dictionary = translations[activeLanguageCode()] || translations.en;
   document.documentElement.lang = activeLanguageCode();
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
-    const value = dictionary[key] ?? additionalTranslations[activeLanguageCode()]?.[key];
-    if (value) element.innerHTML = value;
+    const value = t(key);
+    if (value !== key) element.innerHTML = value;
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
     element.placeholder = t(element.dataset.i18nPlaceholder);
@@ -270,6 +298,13 @@ function applyLanguage() {
   search.placeholder = t("searchPlaceholder");
   search.setAttribute("aria-label", t("searchLabel"));
   document.getElementById("current-language").textContent = t("languageName");
+  const formatting = document.querySelector(".composer-formatting");
+  formatting.setAttribute("aria-label", t("formatting"));
+  for (const button of formatting.querySelectorAll("[data-format]")) {
+    const label = t(button.dataset.format);
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  }
   updateIdentityUI();
   updateNotificationBadge();
   updateAccountButton();
@@ -384,9 +419,28 @@ function showStoryComposer() {
     return;
   }
   selectedStoryImage = null;
-  openModal(`<span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${t("addStory")}</h2><p class="modal-copy">${t("storyPublished")}</p><form class="form-stack" id="story-form"><label class="form-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label><label class="story-form-image">${t("storyImageLabel")}<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label><span class="form-error hidden" id="story-form-error" role="alert"></span><button class="button button-dark" type="submit">${t("publish")}</button></form>`);
+  selectedStoryMode = "text";
+  openModal(`<span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${t("addStory")}</h2><p class="modal-copy">${t("storyPublished")}</p><form class="form-stack" id="story-form">
+    <div class="story-mode-options" role="group" aria-label="${t("addStory")}">
+      <button type="button" class="is-selected" data-story-mode="text" aria-pressed="true">${t("storyTextMode")}</button>
+      <button type="button" data-story-mode="photo" aria-pressed="false">${t("storyPhotoMode")}</button>
+      <button type="button" data-story-mode="both" aria-pressed="false">${t("storyBothMode")}</button>
+    </div>
+    <label class="form-field story-text-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label>
+    <label class="story-form-image story-image-field hidden">${t("storyImageLabel")}<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label>
+    <span class="form-error hidden" id="story-form-error" role="alert"></span><button class="button button-dark" type="submit">${t("publish")}</button></form>`);
   const form = document.getElementById("story-form");
   const imageInput = form.elements.namedItem("image");
+  form.querySelectorAll("[data-story-mode]").forEach((button) => button.addEventListener("click", () => {
+    selectedStoryMode = button.dataset.storyMode;
+    form.querySelectorAll("[data-story-mode]").forEach((option) => {
+      const selected = option === button;
+      option.classList.toggle("is-selected", selected);
+      option.setAttribute("aria-pressed", String(selected));
+    });
+    form.querySelector(".story-text-field").classList.toggle("hidden", selectedStoryMode === "photo");
+    form.querySelector(".story-image-field").classList.toggle("hidden", selectedStoryMode === "text");
+  }));
   imageInput.addEventListener("change", () => {
     selectedStoryImage = imageInput.files?.[0] || null;
     if (!selectedStoryImage) return;
@@ -404,9 +458,10 @@ function showStoryComposer() {
   });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const body = String(new FormData(form).get("body") || "").trim();
+    const body = selectedStoryMode === "photo" ? "" : String(new FormData(form).get("body") || "").trim();
+    const image = selectedStoryMode === "text" ? null : selectedStoryImage;
     const error = document.getElementById("story-form-error");
-    if (!body && !selectedStoryImage) {
+    if (!body && !image) {
       error.textContent = t("storyEmpty");
       error.classList.remove("hidden");
       return;
@@ -414,7 +469,7 @@ function showStoryComposer() {
     const submit = form.querySelector('[type="submit"]');
     submit.disabled = true;
     try {
-      await window.wallBackend.publishStory({ body, image: selectedStoryImage });
+      await window.wallBackend.publishStory({ body, image });
       closeModal();
       await refreshStories();
       showToast(t("storyPublished"));
@@ -545,17 +600,22 @@ async function renderNotifications() {
 }
 
 function renderPost(post) {
-  const body = escapeHtml(post.body).replace(/(^|\s)(#[\p{L}\d_]+)/gu, '$1<a href="#" class="post-tag">$2</a>');
+  const body = escapeHtml(post.body)
+    .replace(/\*\*\*(.+?)\*\*\*/gs, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/gs, "<em>$1</em>")
+    .replace(/(^|\s)(#[\p{L}\d_]+)/gu, '$1<a href="#" class="post-tag">$2</a>');
   const art = post.imageUrl
     ? `<img class="post-image" src="${escapeHtml(post.imageUrl)}" alt="${t("postImage")}" loading="lazy"/>`
     : post.art ? `<div class="post-art ${escapeHtml(post.art)}" role="img" aria-label="${escapeHtml(post.caption)}"><span class="art-caption">${escapeHtml(post.caption)}</span></div>` : "";
   const commentItems = (post.commentsList || []).map((comment) => `<p class="inline-comment"><strong>${escapeHtml(comment.name || state.name)}:</strong> ${escapeHtml(comment.body || comment)}</p>`).join("");
   const canFollow = currentUser && post.authorId && post.authorId !== currentUser.id;
+  const canDelete = currentUser && post.authorId === currentUser.id;
   const liked = currentPostState.liked.has(post.id) || post.liked;
   const saved = currentPostState.saved.has(post.id) || post.saved;
   const isFollowing = followedIds.has(post.authorId);
   return `<article class="post-card" data-post-id="${escapeHtml(post.id)}">
-    <header class="post-head">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""}" data-action="follow" aria-label="${t(isFollowing ? "subscribed" : "subscribe")}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(isFollowing ? "subscribed" : "subscribe")}</span></button>` : ""}</header>
+    <header class="post-head">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""}" data-action="follow" aria-label="${t(isFollowing ? "subscribed" : "subscribe")}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(isFollowing ? "subscribed" : "subscribe")}</span></button>` : ""}${canDelete ? `<button class="post-delete-button" data-action="delete" type="button" aria-label="${t("deletePost")}" title="${t("deletePost")}">${icon("trash")}</button>` : ""}</header>
     <div class="post-body"><p>${body}</p></div>${art}
     <div class="post-actions"><button class="post-action ${liked ? "is-liked" : ""}" data-action="like" aria-label="${liked ? t("unlike") : t("like")}">${icon("heart")}<span>${post.likes}</span></button><button class="post-action" data-action="comment">${icon("message")}<span>${post.comments} ${t("comments")}</span></button><button class="post-action post-save-action ${saved ? "is-saved" : ""}" data-action="save" aria-label="${saved ? t("unsave") : t("savePost")}">${icon(saved ? "bookmark-fill" : "bookmark")}<span>${t("savePost")}</span></button><button class="post-action share-action" data-action="share">${icon("send")}<span>${t("share")}</span></button></div>
     <form class="post-comment" data-comment-form>${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<textarea name="comment" maxlength="500" rows="1" placeholder="${t("comment")}" aria-label="${t("comment")}"></textarea><button type="submit" aria-label="${t("commentButton")}">${icon("send")}</button></form>
@@ -784,13 +844,21 @@ function showProfile() {
     handle: state.handle.replace(/^@/, ""),
     avatar_url: null
   };
+  const recentPosts = posts.filter((post) => post.authorId === currentUser.id).length;
   openModal(`<div class="profile-view">
-    <span class="modal-kicker">${icon("users")} THE WALL</span>
-    <h2 class="modal-title">${t("viewAccount")}</h2>
-    <p class="modal-copy">${t("accountViewCopy")}</p>
     <section class="profile-view-card">
-      ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
-      <div class="profile-view-details"><h3>${escapeHtml(profile.display_name)}</h3><p>@${escapeHtml(profile.handle)}</p><small>${escapeHtml(currentUser.email || "")}</small></div>
+      <div class="profile-hero-banner"><span>${icon("sparkle")} THE WALL</span><span class="profile-hero-orbit" aria-hidden="true">✳</span></div>
+      <div class="profile-view-content">
+        <div class="profile-view-identity">
+          ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
+          <div class="profile-view-details"><h2>${escapeHtml(profile.display_name)}</h2><p>@${escapeHtml(profile.handle)}</p><small>${escapeHtml(currentUser.email || "")}</small></div>
+        </div>
+        <div class="profile-view-stats">
+          <div><strong>${recentPosts}</strong><span>${t("profilePostsInFeed")}</span></div>
+          <div><strong>${friends.length}</strong><span>${t("profileFollowingCount")}</span></div>
+        </div>
+        <p class="profile-view-note">${t("profileRecentActivity")}</p>
+      </div>
     </section>
     <div class="profile-view-actions">
       <button class="button button-dark" id="profile-edit-account" type="button">${icon("settings")}${t("editAccount")}</button>
@@ -1214,6 +1282,34 @@ function installComposer() {
     resizeTextarea(textarea);
     void updateMentionSuggestions(textarea);
   });
+  const formatting = form.querySelector(".composer-formatting");
+  formatting.addEventListener("mousedown", (event) => {
+    if (event.target.closest("[data-format]")) event.preventDefault();
+  });
+  formatting.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-format]");
+    if (!button) return;
+    const marker = button.dataset.format === "bold" ? "**" : "*";
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selection = textarea.value.slice(start, end);
+    const leadingMarkers = selection.match(/^\*+/)?.[0].length || 0;
+    const trailingMarkers = selection.match(/\*+$/)?.[0].length || 0;
+    const isFormatted = marker === "*"
+      ? leadingMarkers === 1 && trailingMarkers === 1 || leadingMarkers === 3 && trailingMarkers === 3
+      : leadingMarkers >= 2 && trailingMarkers >= 2;
+    const replacement = isFormatted
+      ? selection.slice(marker.length, -marker.length)
+      : `${marker}${selection}${marker}`;
+    const nextValue = `${textarea.value.slice(0, start)}${replacement}${textarea.value.slice(end)}`;
+    if (nextValue.length > textarea.maxLength) return;
+    textarea.value = nextValue;
+    const selectionStart = isFormatted ? start : start + marker.length;
+    const selectionEnd = isFormatted ? start + replacement.length : selectionStart + selection.length;
+    textarea.focus();
+    textarea.setSelectionRange(selectionStart, selectionEnd);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  });
   resizeTextarea(textarea);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1373,6 +1469,27 @@ document.addEventListener("click", async (event) => {
     const post = posts.find((entry) => entry.id === card?.dataset.postId);
     if (!post) return;
     const action = actionButton.dataset.action;
+    if (action === "delete") {
+      if (!currentUser || post.authorId !== currentUser.id) return;
+      if (!window.confirm(t("deletePostConfirm"))) return;
+      actionButton.disabled = true;
+      try {
+        let imageCleanupFailed = false;
+        if (post.remote) {
+          ({ imageCleanupFailed } = await window.wallBackend.deletePost(post.id));
+        } else {
+          posts = posts.filter((entry) => entry.id !== post.id);
+          savePosts();
+        }
+        posts = posts.filter((entry) => entry.id !== post.id);
+        renderPosts();
+        void refreshBackendData();
+        showToast(t(imageCleanupFailed ? "postDeletedImageWarning" : "postDeleted"));
+      } catch (error) {
+        showDataError(error);
+      }
+      return;
+    }
     if (action === "like") {
       const liked = currentPostState.liked.has(post.id) || post.liked;
       try {

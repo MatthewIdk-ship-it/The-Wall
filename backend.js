@@ -163,6 +163,43 @@
       }
       return data;
     },
+    async deletePost(postId) {
+      const api = requireClient();
+      const { data: authData, error: authError } = await api.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("Conectează-te pentru a șterge postări.");
+      const { data, error } = await api.from("posts")
+        .delete()
+        .eq("id", postId)
+        .eq("author_id", authData.user.id)
+        .select("image_url")
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error("Postarea nu există sau nu îți aparține.");
+
+      let imageCleanupFailed = false;
+      if (data.image_url) {
+        const imageUrl = new URL(data.image_url);
+        const prefix = "/storage/v1/object/public/post-images/";
+        const encodedPath = imageUrl.pathname.startsWith(prefix) ? imageUrl.pathname.slice(prefix.length) : "";
+        const [ownerId, encodedFileName, ...extraPath] = encodedPath.split("/");
+        if (imageUrl.origin !== new URL(config.supabaseUrl).origin
+          || ownerId !== authData.user.id
+          || !encodedFileName
+          || extraPath.length) {
+          imageCleanupFailed = true;
+          console.warn("The post was deleted, but its image URL was not a recognized owned storage object.");
+        } else {
+          const storagePath = `${ownerId}/${decodeURIComponent(encodedFileName)}`;
+          const { error: cleanupError } = await api.storage.from("post-images").remove([storagePath]);
+          if (cleanupError) {
+            imageCleanupFailed = true;
+            console.error("The post was deleted, but its image could not be removed.", cleanupError);
+          }
+        }
+      }
+      return { imageCleanupFailed };
+    },
     async toggleLike(postId, liked) {
       const api = requireClient();
       const { data: authData, error: authError } = await api.auth.getUser();
