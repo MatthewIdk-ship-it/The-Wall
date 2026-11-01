@@ -41,6 +41,8 @@ const translations = {
   }
 };
 
+const englishLanguageNames = { ro: "Romanian", en: "English", es: "Spanish", fr: "French", de: "German", it: "Italian", pt: "Portuguese", ja: "Japanese" };
+
 const featureTranslations = {
   ro: {
     settingsTitle: "Setările tale",
@@ -232,6 +234,12 @@ function t(key) {
   const language = activeLanguageCode();
   const value = translations[language]?.[key] ?? additionalTranslations[language]?.[key] ?? authTranslations[language]?.[key] ?? featureTranslations[language]?.[key] ?? translations.en[key] ?? additionalTranslations.en[key] ?? authTranslations.en[key] ?? featureTranslations.en[key] ?? key;
   return key === "goodMorning" ? value.replace(" <span>☀️</span>", "") : value;
+}
+
+function languageOptionLabel(code) {
+  const nativeName = translations[code].languageName;
+  const englishName = englishLanguageNames[code];
+  return `<span class="language-option-copy"><strong>${nativeName}</strong>${nativeName === englishName ? "" : `<small>${englishName}</small>`}</span>`;
 }
 
 function systemLanguage() {
@@ -1168,7 +1176,7 @@ function showSettings(activeTab = "account") {
     ].map(([tab, symbol, label]) => `<button class="settings-tab ${activeTab === tab ? "is-active" : ""}" type="button" data-settings-tab="${tab}">${icon(symbol)}<span>${t(label)}</span></button>`).join("")}</nav>
     <section class="settings-pane ${activeTab === "account" ? "" : "hidden"}"><h3>${t("accountTab")}</h3><p class="settings-pane-copy">${t("accountCopy")}</p>${accountPane}</section>
     <section class="settings-pane ${activeTab === "appearance" ? "" : "hidden"}"><h3>${t("appearanceTab")}</h3><p class="settings-pane-copy">${t("themeDescription")}</p><div class="settings-option-grid">${themes.map(([value, symbol, name, copy]) => `<button class="settings-option ${state.theme === value ? "is-selected" : ""}" type="button" data-theme="${value}">${icon(symbol)}<strong>${t(name)}</strong><small>${t(copy)}</small>${icon("check")}</button>`).join("")}</div></section>
-    <section class="settings-pane ${activeTab === "language" ? "" : "hidden"}"><h3>${t("languageTab")}</h3><p class="settings-pane-copy">${t("madeWithCare")}</p><div class="settings-option-grid settings-language-grid"><button class="settings-option ${state.language === "system" ? "is-selected" : ""}" type="button" data-settings-language="system"><strong>${t("systemLanguage")}</strong><small>${translations[systemLanguage()].languageName}</small>${icon("check")}</button>${languages.map((code) => `<button class="settings-option ${state.language === code ? "is-selected" : ""}" type="button" data-settings-language="${code}"><strong>${translations[code].languageName}</strong>${icon("check")}</button>`).join("")}</div></section>
+    <section class="settings-pane ${activeTab === "language" ? "" : "hidden"}"><h3>${t("languageTab")}</h3><p class="settings-pane-copy">${t("madeWithCare")}</p><div class="settings-option-grid settings-language-grid"><button class="settings-option ${state.language === "system" ? "is-selected" : ""}" type="button" data-settings-language="system"><strong>${t("systemLanguage")}</strong><small>${translations[systemLanguage()].languageName}</small>${icon("check")}</button>${languages.map((code) => `<button class="settings-option ${state.language === code ? "is-selected" : ""}" type="button" data-settings-language="${code}">${languageOptionLabel(code)}${icon("check")}</button>`).join("")}</div></section>
     </div>`, "settings");
   document.querySelectorAll("[data-settings-tab]").forEach((button) => button.addEventListener("click", () => showSettings(button.dataset.settingsTab)));
   document.querySelectorAll("[data-theme]").forEach((button) => button.addEventListener("click", () => {
@@ -1333,7 +1341,7 @@ function showSettings(activeTab = "account") {
 
 function showLanguages() {
   const names = Object.keys(translations);
-  openModal(`<span class="modal-kicker">${icon("globe")} THE WALL</span><h2 class="modal-title">${t("languagesTitle")}</h2><p class="modal-copy">${t("madeWithCare")}</p><div class="language-list"><button class="language-option ${state.language === "system" ? "is-selected" : ""}" data-language="system"><span>${t("systemLanguage")} · ${translations[systemLanguage()].languageName}</span>${icon("check")}</button>${names.map((code) => `<button class="language-option ${state.language === code ? "is-selected" : ""}" data-language="${code}"><span>${translations[code].languageName}</span>${icon("check")}</button>`).join("")}</div>`);
+  openModal(`<span class="modal-kicker">${icon("globe")} THE WALL</span><h2 class="modal-title">${t("languagesTitle")}</h2><p class="modal-copy">${t("madeWithCare")}</p><div class="language-list"><button class="language-option ${state.language === "system" ? "is-selected" : ""}" data-language="system"><span>${t("systemLanguage")} · ${translations[systemLanguage()].languageName}</span>${icon("check")}</button>${names.map((code) => `<button class="language-option ${state.language === code ? "is-selected" : ""}" data-language="${code}">${languageOptionLabel(code)}${icon("check")}</button>`).join("")}</div>`);
   document.querySelectorAll("[data-language]").forEach((button) => button.addEventListener("click", () => {
     state.language = button.dataset.language;
     saveState();
