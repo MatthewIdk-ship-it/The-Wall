@@ -3,6 +3,7 @@ create table public.profiles (
   display_name text not null check (char_length(display_name) between 1 and 48),
   handle text not null unique check (handle ~ '^[a-z0-9._-]{3,32}$'),
   avatar_url text,
+  banner_url text,
   created_at timestamptz not null default now()
 );
 
@@ -202,7 +203,7 @@ alter table public.follows enable row level security;
 alter table public.notifications enable row level security;
 
 grant select on public.profiles to anon, authenticated;
-grant update (display_name, handle, avatar_url) on public.profiles to authenticated;
+grant update (display_name, handle, avatar_url, banner_url) on public.profiles to authenticated;
 grant select on public.posts to anon, authenticated;
 grant insert, delete on public.posts to authenticated;
 grant select on public.stories to anon, authenticated;
