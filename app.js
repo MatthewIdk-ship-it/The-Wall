@@ -292,7 +292,9 @@ function applyLanguage() {
     if (value !== key) element.innerHTML = value;
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
-    element.placeholder = t(element.dataset.i18nPlaceholder);
+    const placeholder = t(element.dataset.i18nPlaceholder);
+    if (element.isContentEditable) element.dataset.placeholder = placeholder;
+    else element.placeholder = placeholder;
   });
   const search = document.getElementById("search-input");
   search.placeholder = t("searchPlaceholder");
@@ -428,18 +430,19 @@ function showStoryComposer() {
       <button type="button" data-story-mode="both" aria-pressed="false">${t("storyBothMode")}</button>
     </div>
     <div class="story-text-field">
-      <label class="form-field">${t("storyTextLabel")}<textarea name="body" maxlength="500" rows="4" placeholder="${t("storyTextPlaceholder")}"></textarea></label>
+      <label class="form-field">${t("storyTextLabel")}<div class="rich-text-editor story-text-editor" contenteditable="true" role="textbox" aria-multiline="true" data-max-length="500" data-placeholder="${t("storyTextPlaceholder")}" aria-label="${t("storyTextLabel")}"></div></label>
       <div class="composer-formatting story-formatting" role="group" aria-label="${t("formatting")}">
         <span>${t("formatting")}</span>
-        <button type="button" data-format="bold" aria-label="${t("bold")}" title="${t("bold")}">${icon("bold")}</button>
-        <button type="button" data-format="italic" aria-label="${t("italic")}" title="${t("italic")}">${icon("italic")}</button>
+        <button type="button" data-format="bold" aria-label="${t("bold")}" title="${t("bold")}" aria-pressed="false">${icon("bold")}</button>
+        <button type="button" data-format="italic" aria-label="${t("italic")}" title="${t("italic")}" aria-pressed="false">${icon("italic")}</button>
       </div>
     </div>
     <label class="story-form-image story-image-field hidden">${t("storyImageLabel")}<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label>
     <span class="form-error hidden" id="story-form-error" role="alert"></span><button class="button button-dark" type="submit">${t("publish")}</button></form>`);
   const form = document.getElementById("story-form");
   const imageInput = form.elements.namedItem("image");
-  installTextFormatting(form.elements.namedItem("body"), form.querySelector(".story-formatting"));
+  const editor = form.querySelector(".story-text-editor");
+  installTextFormatting(editor, form.querySelector(".story-formatting"));
   form.querySelectorAll("[data-story-mode]").forEach((button) => button.addEventListener("click", () => {
     selectedStoryMode = button.dataset.storyMode;
     form.querySelectorAll("[data-story-mode]").forEach((option) => {
@@ -467,7 +470,7 @@ function showStoryComposer() {
   });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const body = selectedStoryMode === "photo" ? "" : String(new FormData(form).get("body") || "").trim();
+    const body = selectedStoryMode === "photo" ? "" : editorToMarkdown(editor).trim();
     const image = selectedStoryMode === "text" ? null : selectedStoryImage;
     const error = document.getElementById("story-form-error");
     if (!body && !image) {
@@ -684,6 +687,42 @@ function formatRichText(value) {
     .replace(/\*\*\*(.+?)\*\*\*/gs, "<strong><em>$1</em></strong>")
     .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/gs, "<em>$1</em>");
+}
+
+function editorToMarkdown(editor) {
+  const segments = [];
+  const append = (text, bold, italic) => {
+    if (!text) return;
+    const previous = segments.at(-1);
+    if (previous && previous.bold === bold && previous.italic === italic) previous.text += text;
+    else segments.push({ text, bold, italic });
+  };
+  const visit = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const style = getComputedStyle(node.parentElement);
+      const weight = Number.parseInt(style.fontWeight, 10);
+      append(node.textContent, weight >= 600 || style.fontWeight === "bold", style.fontStyle === "italic" || style.fontStyle === "oblique");
+      return;
+    }
+    if (!(node instanceof HTMLElement)) return;
+    if (node.tagName === "BR") {
+      append("\n", false, false);
+      return;
+    }
+    const isBlock = node !== editor && ["DIV", "P"].includes(node.tagName);
+    if (isBlock && segments.length && !segments.at(-1).text.endsWith("\n")) append("\n", false, false);
+    node.childNodes.forEach(visit);
+    if (isBlock && segments.length && !segments.at(-1).text.endsWith("\n")) append("\n", false, false);
+  };
+  editor.childNodes.forEach((node) => visit(node));
+  while (segments.at(-1)?.text.endsWith("\n")) {
+    segments.at(-1).text = segments.at(-1).text.slice(0, -1);
+    if (!segments.at(-1).text) segments.pop();
+  }
+  return segments.map(({ text, bold, italic }) => {
+    const marker = bold && italic ? "***" : bold ? "**" : italic ? "*" : "";
+    return marker ? `${marker}${text}${marker}` : text;
+  }).join("");
 }
 
 function formatPostTime(value) {
@@ -1257,7 +1296,7 @@ function focusComposer() {
 
 function installComposer() {
   const form = document.getElementById("feed-composer-form");
-  const textarea = document.getElementById("composer-prompt");
+  const editor = document.getElementById("composer-prompt");
   const imageInput = document.getElementById("image-input");
   imageInput.addEventListener("change", () => {
     const file = imageInput.files?.[0];
@@ -1285,21 +1324,19 @@ function installComposer() {
     document.getElementById("upload-preview").classList.add("hidden");
     document.getElementById("upload-preview").innerHTML = "";
   });
-  textarea.addEventListener("keydown", (event) => {
+  editor.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault();
       form.requestSubmit();
     }
   });
-  textarea.addEventListener("input", () => {
-    resizeTextarea(textarea);
-    void updateMentionSuggestions(textarea);
+  editor.addEventListener("input", () => {
+    void updateMentionSuggestions(editor);
   });
-  installTextFormatting(textarea, form.querySelector(".composer-formatting"));
-  resizeTextarea(textarea);
+  installTextFormatting(editor, form.querySelector(".composer-formatting"));
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const body = String(new FormData(form).get("body")).trim();
+    const body = editorToMarkdown(editor).trim();
     if (!body && !selectedImage) return showToast(t("emptyPost"));
     if (!window.wallBackend?.configured) return showToast(t("authConfigMissing"));
     if (!currentUser) {
@@ -1311,6 +1348,8 @@ function installComposer() {
     try {
       await window.wallBackend.publishPost({ body, image: selectedImage });
       form.reset();
+      editor.replaceChildren();
+      document.getElementById("mention-suggestions")?.remove();
       selectedImage = null;
       if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
       imagePreviewUrl = null;
@@ -1326,47 +1365,167 @@ function installComposer() {
   });
 }
 
-function resizeTextarea(textarea) {
-  textarea.style.height = "auto";
-  const maxHeight = Number.parseFloat(getComputedStyle(textarea).maxHeight) || Infinity;
-  textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
-  textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
-}
-
-function installTextFormatting(textarea, formatting) {
+function installTextFormatting(editor, formatting) {
+  editor.addEventListener("beforeinput", (event) => {
+    if (event.inputType !== "insertText" || !event.data) return;
+    const bold = editor.dataset.nextBold === "true";
+    const italic = editor.dataset.nextItalic === "true";
+    if (!bold && !italic) return;
+    const selection = window.getSelection();
+    if (!selection?.rangeCount || !editor.contains(selection.anchorNode)) return;
+    event.preventDefault();
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+    let node = document.createTextNode(event.data);
+    if (italic) {
+      const wrapper = document.createElement("em");
+      wrapper.append(node);
+      node = wrapper;
+    }
+    if (bold) {
+      const wrapper = document.createElement("strong");
+      wrapper.append(node);
+      node = wrapper;
+    }
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  editor.addEventListener("input", () => enforceEditorLength(editor));
   formatting.addEventListener("mousedown", (event) => {
     if (event.target.closest("[data-format]")) event.preventDefault();
   });
   formatting.addEventListener("click", (event) => {
     const button = event.target.closest("[data-format]");
     if (!button) return;
-    const marker = button.dataset.format === "bold" ? "**" : "*";
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selection = textarea.value.slice(start, end);
-    const leadingMarkers = selection.match(/^\*+/)?.[0].length || 0;
-    const trailingMarkers = selection.match(/\*+$/)?.[0].length || 0;
-    const isFormatted = marker === "*"
-      ? leadingMarkers === 1 && trailingMarkers === 1 || leadingMarkers === 3 && trailingMarkers === 3
-      : leadingMarkers >= 2 && trailingMarkers >= 2;
-    const replacement = isFormatted
-      ? selection.slice(marker.length, -marker.length)
-      : `${marker}${selection}${marker}`;
-    const nextValue = `${textarea.value.slice(0, start)}${replacement}${textarea.value.slice(end)}`;
-    if (nextValue.length > textarea.maxLength) return;
-    textarea.value = nextValue;
-    const selectionStart = isFormatted ? start : start + marker.length;
-    const selectionEnd = isFormatted ? start + replacement.length : selectionStart + selection.length;
-    textarea.focus();
-    textarea.setSelectionRange(selectionStart, selectionEnd);
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    editor.focus();
+    const selection = window.getSelection();
+    if (selection?.rangeCount && editor.contains(selection.anchorNode) && !selection.isCollapsed) {
+      toggleSelectedFormat(editor, selection.getRangeAt(0), button.dataset.format);
+      delete editor.dataset.nextBold;
+      delete editor.dataset.nextItalic;
+      formatting.querySelectorAll("[data-format]").forEach((formatButton) => {
+        formatButton.classList.remove("is-active");
+        formatButton.setAttribute("aria-pressed", "false");
+      });
+    } else {
+      const attribute = button.dataset.format === "bold" ? "nextBold" : "nextItalic";
+      const active = editor.dataset[attribute] !== "true";
+      editor.dataset[attribute] = String(active);
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    }
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  installPlainTextPaste(editor);
+}
+
+function toggleSelectedFormat(editor, range, format) {
+  const property = format === "bold" ? "fontWeight" : "fontStyle";
+  const selectedTextNodes = [];
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+  let textNode;
+  while ((textNode = walker.nextNode())) {
+    if (range.intersectsNode(textNode)) selectedTextNodes.push(textNode);
+  }
+  const isFormatted = selectedTextNodes.length > 0 && selectedTextNodes.every((node) => {
+    const style = getComputedStyle(node.parentElement);
+    return format === "bold"
+      ? Number.parseInt(style.fontWeight, 10) >= 600 || style.fontWeight === "bold"
+      : style.fontStyle === "italic" || style.fontStyle === "oblique";
+  });
+  const fragment = range.extractContents();
+  if (isFormatted) {
+    const tags = format === "bold" ? "b,strong" : "i,em";
+    fragment.querySelectorAll(tags).forEach((wrapper) => {
+      const parent = wrapper.parentNode;
+      while (wrapper.firstChild) parent.insertBefore(wrapper.firstChild, wrapper);
+      wrapper.remove();
+    });
+  }
+  const wrapper = document.createElement("span");
+  wrapper.style[property] = format === "bold"
+    ? isFormatted ? "normal" : "bold"
+    : isFormatted ? "normal" : "italic";
+  wrapper.append(fragment);
+  range.insertNode(wrapper);
+  const selection = window.getSelection();
+  const nextRange = document.createRange();
+  nextRange.selectNodeContents(wrapper);
+  selection.removeAllRanges();
+  selection.addRange(nextRange);
+}
+
+function installPlainTextPaste(editor) {
+  const insertPlainText = (event, text) => {
+    event.preventDefault();
+    const selection = window.getSelection();
+    if (!selection?.rangeCount || !editor.contains(selection.anchorNode)) return;
+    const range = selection.getRangeAt(0);
+    const currentLength = editor.textContent.length;
+    const selectedLength = range.toString().length;
+    const availableLength = Number(editor.dataset.maxLength) - (currentLength - selectedLength);
+    const insertedText = text.slice(0, Math.max(0, availableLength));
+    range.deleteContents();
+    let insertedNode = document.createTextNode(insertedText);
+    if (editor.dataset.nextItalic === "true") {
+      const wrapper = document.createElement("em");
+      wrapper.append(insertedNode);
+      insertedNode = wrapper;
+    }
+    if (editor.dataset.nextBold === "true") {
+      const wrapper = document.createElement("strong");
+      wrapper.append(insertedNode);
+      insertedNode = wrapper;
+    }
+    range.insertNode(insertedNode);
+    range.setStartAfter(insertedNode);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  editor.addEventListener("paste", (event) => {
+    insertPlainText(event, event.clipboardData?.getData("text/plain") || "");
+  });
+  editor.addEventListener("drop", (event) => {
+    insertPlainText(event, event.dataTransfer?.getData("text/plain") || "");
   });
 }
 
-async function updateMentionSuggestions(textarea) {
+function enforceEditorLength(editor) {
+  if (!editor.textContent && editor.childNodes.length) {
+    editor.replaceChildren();
+    return;
+  }
+  const maxLength = Number(editor.dataset.maxLength);
+  if (editor.textContent.length <= maxLength) return;
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+  let remaining = maxLength;
+  let node;
+  while ((node = walker.nextNode())) {
+    node.textContent = node.textContent.slice(0, Math.max(0, remaining));
+    remaining -= node.textContent.length;
+  }
+}
+
+function editorCursorOffset(editor) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !editor.contains(selection.anchorNode)) return null;
+  const range = document.createRange();
+  range.selectNodeContents(editor);
+  range.setEnd(selection.anchorNode, selection.anchorOffset);
+  return range.toString().length;
+}
+
+async function updateMentionSuggestions(editor) {
   if (!window.wallBackend?.configured || !currentUser) return;
-  const cursor = textarea.selectionStart;
-  const beforeCursor = textarea.value.slice(0, cursor);
+  const cursor = editorCursorOffset(editor);
+  if (cursor === null) return;
+  const beforeCursor = editor.textContent.slice(0, cursor);
   const match = beforeCursor.match(/(?:^|\s)@([a-zA-Z0-9._-]{1,32})$/);
   const popover = document.getElementById("mention-suggestions");
   if (!match || match[1].length < 2) {
@@ -1377,13 +1536,13 @@ async function updateMentionSuggestions(textarea) {
   const request = ++mentionRequest;
   try {
     const profiles = await window.wallBackend.searchProfiles(token);
-    if (request !== mentionRequest || textarea !== document.activeElement) return;
+    if (request !== mentionRequest || editor !== document.activeElement) return;
     let menu = document.getElementById("mention-suggestions");
     if (!menu) {
       menu = document.createElement("div");
       menu.id = "mention-suggestions";
       menu.className = "mention-suggestions";
-      textarea.closest(".composer-top").append(menu);
+      editor.closest(".composer-top").append(menu);
     }
     const matches = profiles.filter((profile) => profile.id !== currentUser.id);
     menu.innerHTML = matches.map((profile) => `<button type="button" data-mention="${escapeHtml(profile.handle)}"><strong>${escapeHtml(profile.display_name)}</strong><small>@${escapeHtml(profile.handle)}</small></button>`).join("");
@@ -1395,17 +1554,53 @@ async function updateMentionSuggestions(textarea) {
 document.addEventListener("click", (event) => {
   const mention = event.target.closest("[data-mention]");
   if (!mention) return;
-  const textarea = document.getElementById("composer-prompt");
-  const cursor = textarea.selectionStart;
-  const before = textarea.value.slice(0, cursor).replace(/(?:^|\s)@([a-zA-Z0-9._-]{1,32})$/, (match) => match.startsWith(" ") ? " " : "");
-  const after = textarea.value.slice(cursor);
+  const editor = document.getElementById("composer-prompt");
+  const cursor = editorCursorOffset(editor);
+  if (cursor === null) return;
+  const text = editor.textContent;
+  const before = text.slice(0, cursor).replace(/(?:^|\s)@([a-zA-Z0-9._-]{1,32})$/, (match) => match.startsWith(" ") ? " " : "");
   const insertion = `@${mention.dataset.mention} `;
-  textarea.value = `${before}${insertion}${after}`;
-  textarea.focus();
-  const next = before.length + insertion.length;
-  textarea.setSelectionRange(next, next);
+  const range = editorRangeForText(editor, before.length, cursor);
+  if (!range) return;
+  const selection = window.getSelection();
+  range.deleteContents();
+  const insertedNode = document.createTextNode(insertion);
+  range.insertNode(insertedNode);
+  range.setStartAfter(insertedNode);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  editor.focus();
   document.getElementById("mention-suggestions")?.remove();
 });
+
+function editorRangeForText(editor, startOffset, endOffset) {
+  const textNodes = [];
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) textNodes.push(node);
+  if (!textNodes.length) {
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(true);
+    return range;
+  }
+  const locate = (offset) => {
+    let remaining = offset;
+    for (const textNode of textNodes) {
+      if (remaining <= textNode.textContent.length) return [textNode, remaining];
+      remaining -= textNode.textContent.length;
+    }
+    const last = textNodes[textNodes.length - 1];
+    return [last, last.textContent.length];
+  };
+  const [startNode, start] = locate(startOffset);
+  const [endNode, end] = locate(endOffset);
+  const range = document.createRange();
+  range.setStart(startNode, start);
+  range.setEnd(endNode, end);
+  return range;
+}
 
 document.addEventListener("click", async (event) => {
   const trendTag = event.target.closest("[data-trend-tag], .post-tag");

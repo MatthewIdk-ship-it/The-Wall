@@ -15,11 +15,11 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261101-5" />
+    <link rel="stylesheet" href="styles.css?v=20261101-6" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js" defer></script>
     <script src="backend.js" defer></script>
-    <script src="app.js?v=20261101-5" defer></script>
+    <script src="app.js?v=20261101-6" defer></script>
   </head>
   <body>
     <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -102,12 +102,12 @@
 
           <article class="composer-card">
             <form class="feed-composer-form" id="feed-composer-form">
-              <div class="composer-top"><span class="avatar avatar-you">G</span><textarea class="composer-prompt" id="composer-prompt" name="body" maxlength="1000" data-i18n-placeholder="composerPrompt" placeholder="Ce ai vrea să împărtășești?" aria-label="Post text"></textarea></div>
+              <div class="composer-top"><span class="avatar avatar-you">G</span><div class="composer-prompt rich-text-editor" id="composer-prompt" contenteditable="true" role="textbox" aria-multiline="true" data-max-length="1000" data-i18n-placeholder="composerPrompt" data-placeholder="Ce ai vrea să împărtășești?" aria-label="Post text"></div></div>
               <div class="upload-preview hidden" id="upload-preview"></div>
               <div class="composer-formatting" role="group" aria-label="Formatare text">
                 <span data-i18n="formatting">Formatare</span>
-                <button type="button" data-format="bold" aria-label="Aldin" title="Aldin"><svg class="icon"><use href="#i-bold"/></svg></button>
-                <button type="button" data-format="italic" aria-label="Cursiv" title="Cursiv"><svg class="icon"><use href="#i-italic"/></svg></button>
+                <button type="button" data-format="bold" aria-label="Aldin" title="Aldin" aria-pressed="false"><svg class="icon"><use href="#i-bold"/></svg></button>
+                <button type="button" data-format="italic" aria-label="Cursiv" title="Cursiv" aria-pressed="false"><svg class="icon"><use href="#i-italic"/></svg></button>
               </div>
               <div class="composer-bottom">
                 <div class="composer-tools">
