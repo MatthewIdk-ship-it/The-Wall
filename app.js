@@ -41,8 +41,6 @@ const translations = {
   }
 };
 
-const englishLanguageNames = { ro: "Romanian", en: "English", es: "Spanish", fr: "French", de: "German", it: "Italian", pt: "Portuguese", ja: "Japanese" };
-
 const featureTranslations = {
   ro: {
     settingsTitle: "Setările tale",
@@ -102,7 +100,13 @@ const featureTranslations = {
     viewProfile: "Vezi profilul lui {name}",
     profileNoPosts: "Nu există postări recente în feed.",
     storiesFromFriends: "Prieteni",
-    noFriendStories: "Prietenii tăi nu au povești active acum."
+    noFriendStories: "Prietenii tăi nu au povești active acum.",
+    deleteStory: "Șterge povestea",
+    deleteStoryConfirm: "Sigur vrei să ștergi această poveste? Acțiunea nu poate fi anulată.",
+    storyDeleted: "Povestea a fost ștearsă.",
+    storyDeletedImageWarning: "Povestea a fost ștearsă, dar fotografia nu a putut fi eliminată.",
+    friend: "Prieten",
+    becameFriend: "Acum sunteți prieteni."
   },
   en: {
     settingsTitle: "Your settings",
@@ -162,13 +166,19 @@ const featureTranslations = {
     viewProfile: "View {name}'s profile",
     profileNoPosts: "There are no recent posts in the feed.",
     storiesFromFriends: "Friends",
-    noFriendStories: "Your friends don't have active stories right now."
+    noFriendStories: "Your friends don't have active stories right now.",
+    deleteStory: "Delete story",
+    deleteStoryConfirm: "Are you sure you want to delete this story? This can't be undone.",
+    storyDeleted: "Story deleted.",
+    storyDeletedImageWarning: "Story deleted, but its photo couldn't be removed.",
+    friend: "Friend",
+    becameFriend: "You are friends now."
   }
 };
 
 const additionalTranslations = {
-  ro: { navFriends: "Prieteni", friendsTitle: "Prietenii tăi", friendsPrompt: "Adaugă persoane pe care le cunoști.", addFriend: "Adaugă un prieten", addFriendsTitle: "Adaugă un prieten", addFriendsCopy: "Introdu numele și numele de utilizator.", friendName: "Numele prietenului", friendHandle: "Numele de utilizator", saveFriend: "Adaugă în listă", noFriends: "Lista ta e goală deocamdată.", noFriendsCopy: "Caută un cont după numele de utilizator.", friendAdded: "Te-ai abonat la acest cont.", friendRemoved: "Abonarea a fost anulată.", duplicateFriend: "Acest nume de utilizator este deja în lista ta.", ownFriend: "Nu te poți adăuga pe tine.", systemLanguage: "Limba sistemului", friendsDemoNote: "Caută conturile reale The Wall folosind numele lor de utilizator.", removeFriend: "Elimină prietenul", addPhoto: "Adaugă o fotografie", mentionHint: "Folosește @ pentru a menționa.", authConfigMissing: "Autentificarea nu este configurată. Completează URL-ul și cheia publică Supabase în config.js și aplică schema bazei de date.", authBackendWarning: "Conturile și parolele sunt verificate securizat de Supabase. Confirmarea și resetarea parolei se trimit prin e-mail.", invalidEmail: "Introdu o adresă de e-mail validă.", invalidCredentials: "E-mailul sau parola nu sunt corecte.", passwordMismatch: "Parolele nu coincid.", shortPassword: "Parola trebuie să aibă cel puțin 8 caractere.", checkEmail: "Verifică-ți e-mailul pentru linkul de confirmare.", resetPassword: "Ai uitat parola? Trimite un link de resetare.", resetSent: "Dacă adresa este înregistrată, vei primi un link de resetare.", authError: "Nu te-am putut conecta. Verifică datele și încearcă din nou.", registerError: "Nu am putut crea contul. Verifică datele și încearcă din nou.", saveError: "Nu am putut salva modificarea. Încearcă din nou.", imageOnly: "Alege un fișier imagine JPEG, PNG, WebP sau GIF.", imageTooLarge: "Imaginea trebuie să aibă cel mult 10 MB.", removeImage: "Elimină imaginea", subscribe: "Abonează-te", subscribed: "Abonat", unfollowed: "Abonarea a fost anulată.", notificationFollow: "a început să te urmărească.", notificationPost: "a publicat o postare nouă.", notificationComment: "a comentat la postarea ta.", notificationMention: "te-a menționat.", noNotifications: "Nu ai notificări noi.", notificationsLive: "Aici apar noii abonați, postările lor, comentariile și mențiunile.", savePost: "Salvează", unsave: "Elimină salvarea", postImage: "Imagine dintr-o postare", followingTitle: "Abonările tale", logOut: "Deconectare", username: "Nume de utilizator", confirmPassword: "Confirmă parola", resetTitle: "Resetează parola", resetCopy: "Îți trimitem un link securizat pe e-mail.", sendReset: "Trimite linkul", profileNotFound: "Nu am găsit un cont cu acest nume de utilizator.", justNow: "acum", minutesAgo: "min în urmă", hoursAgo: "h în urmă", loginSuccess: "Te-ai conectat.", signOutSuccess: "Te-ai deconectat." },
-  en: { navFriends: "Friends", friendsTitle: "Your friends", friendsPrompt: "Add people you know.", addFriend: "Add a friend", addFriendsTitle: "Add a friend", addFriendsCopy: "Search for an account by username.", friendName: "Friend's name", friendHandle: "Username", saveFriend: "Follow account", noFriends: "No accounts found.", noFriendsCopy: "Search for a real account by username.", friendAdded: "You're now following this account.", friendRemoved: "You unfollowed this account.", duplicateFriend: "That username is already on your list.", ownFriend: "You can't add yourself.", systemLanguage: "System language", friendsDemoNote: "Search real The Wall accounts by their username.", removeFriend: "Unfollow", addPhoto: "Add a photo", mentionHint: "Use @ to mention someone.", authConfigMissing: "Authentication is not configured. Add your Supabase URL and public key in config.js and apply the database schema.", authBackendWarning: "Supabase securely verifies accounts and passwords. Confirmation and password reset are sent by email.", invalidEmail: "Enter a valid email address.", invalidCredentials: "The email or password is incorrect.", passwordMismatch: "The passwords do not match.", shortPassword: "Password must be at least 8 characters.", checkEmail: "Check your email for a confirmation link.", resetPassword: "Forgot password? Send a reset link.", resetSent: "If that address has an account, a reset link will arrive by email.", authError: "We couldn't sign you in. Check your details and try again.", registerError: "We couldn't create your account. Check your details and try again.", saveError: "We couldn't save that change. Please try again.", imageOnly: "Choose a JPEG, PNG, WebP, or GIF image.", imageTooLarge: "Images must be 10 MB or smaller.", removeImage: "Remove image", subscribe: "Follow", subscribed: "Following", unfollowed: "You unfollowed this account.", notificationFollow: "started following you.", notificationPost: "published a new post.", notificationComment: "commented on your post.", notificationMention: "mentioned you.", noNotifications: "You're all caught up.", notificationsLive: "New followers, their posts, comments, and mentions show up here.", savePost: "Save", unsave: "Remove saved post", postImage: "Image attached to post", followingTitle: "Following", logOut: "Sign out", username: "Username", confirmPassword: "Confirm password", resetTitle: "Reset your password", resetCopy: "We'll email you a secure password reset link.", sendReset: "Send reset link", profileNotFound: "We couldn't find an account with that username.", justNow: "now", minutesAgo: "m ago", hoursAgo: "h ago", loginSuccess: "You're signed in.", signOutSuccess: "You've signed out." },
+  ro: { navFriends: "Prieteni", friendsTitle: "Prietenii tăi", friendsPrompt: "Adaugă persoane pe care le cunoști.", addFriend: "Adaugă un prieten", addFriendsTitle: "Adaugă un prieten", addFriendsCopy: "Introdu numele și numele de utilizator.", friendName: "Numele prietenului", friendHandle: "Numele de utilizator", saveFriend: "Adaugă în listă", noFriends: "Lista ta e goală deocamdată.", noFriendsCopy: "Caută un cont după numele de utilizator.", friendAdded: "Te-ai abonat la acest cont.", friendRemoved: "Abonarea a fost anulată.", duplicateFriend: "Acest nume de utilizator este deja în lista ta.", ownFriend: "Nu te poți adăuga pe tine.", systemLanguage: "Limba sistemului", friendsDemoNote: "Caută conturile reale The Wall folosind numele lor de utilizator.", removeFriend: "Elimină prietenul", addPhoto: "Adaugă o fotografie", mentionHint: "Folosește @ pentru a menționa.", authConfigMissing: "Autentificarea nu este configurată. Completează URL-ul și cheia publică Supabase în config.js și aplică schema bazei de date.", authBackendWarning: "Conturile și parolele sunt verificate securizat de Supabase. Confirmarea și resetarea parolei se trimit prin e-mail.", invalidEmail: "Introdu o adresă de e-mail validă.", invalidCredentials: "E-mailul sau parola nu sunt corecte.", passwordMismatch: "Parolele nu coincid.", shortPassword: "Parola trebuie să aibă cel puțin 8 caractere.", checkEmail: "Verifică-ți e-mailul pentru linkul de confirmare.", resetPassword: "Ai uitat parola? <strong>Trimite un link de resetare</strong>", resetSent: "Dacă adresa este înregistrată, vei primi un link de resetare.", authError: "Nu te-am putut conecta. Verifică datele și încearcă din nou.", registerError: "Nu am putut crea contul. Verifică datele și încearcă din nou.", saveError: "Nu am putut salva modificarea. Încearcă din nou.", imageOnly: "Alege un fișier imagine JPEG, PNG, WebP sau GIF.", imageTooLarge: "Imaginea trebuie să aibă cel mult 10 MB.", removeImage: "Elimină imaginea", subscribe: "Abonează-te", subscribed: "Abonat", unfollowed: "Abonarea a fost anulată.", notificationFollow: "a început să te urmărească.", notificationPost: "a publicat o postare nouă.", notificationComment: "a comentat la postarea ta.", notificationMention: "te-a menționat.", noNotifications: "Nu ai notificări noi.", notificationsLive: "Aici apar noii abonați, postările lor, comentariile și mențiunile.", savePost: "Salvează", unsave: "Elimină salvarea", postImage: "Imagine dintr-o postare", followingTitle: "Abonările tale", logOut: "Deconectare", username: "Nume de utilizator", confirmPassword: "Confirmă parola", resetTitle: "Resetează parola", resetCopy: "Îți trimitem un link securizat pe e-mail.", sendReset: "Trimite linkul", profileNotFound: "Nu am găsit un cont cu acest nume de utilizator.", justNow: "acum", minutesAgo: "min în urmă", hoursAgo: "h în urmă", loginSuccess: "Te-ai conectat.", signOutSuccess: "Te-ai deconectat." },
+  en: { navFriends: "Friends", friendsTitle: "Your friends", friendsPrompt: "Add people you know.", addFriend: "Add a friend", addFriendsTitle: "Add a friend", addFriendsCopy: "Search for an account by username.", friendName: "Friend's name", friendHandle: "Username", saveFriend: "Follow account", noFriends: "No accounts found.", noFriendsCopy: "Search for a real account by username.", friendAdded: "You're now following this account.", friendRemoved: "You unfollowed this account.", duplicateFriend: "That username is already on your list.", ownFriend: "You can't add yourself.", systemLanguage: "System language", friendsDemoNote: "Search real The Wall accounts by their username.", removeFriend: "Unfollow", addPhoto: "Add a photo", mentionHint: "Use @ to mention someone.", authConfigMissing: "Authentication is not configured. Add your Supabase URL and public key in config.js and apply the database schema.", authBackendWarning: "Supabase securely verifies accounts and passwords. Confirmation and password reset are sent by email.", invalidEmail: "Enter a valid email address.", invalidCredentials: "The email or password is incorrect.", passwordMismatch: "The passwords do not match.", shortPassword: "Password must be at least 8 characters.", checkEmail: "Check your email for a confirmation link.", resetPassword: "Forgot password? <strong>Send a reset link</strong>", resetSent: "If that address has an account, a reset link will arrive by email.", authError: "We couldn't sign you in. Check your details and try again.", registerError: "We couldn't create your account. Check your details and try again.", saveError: "We couldn't save that change. Please try again.", imageOnly: "Choose a JPEG, PNG, WebP, or GIF image.", imageTooLarge: "Images must be 10 MB or smaller.", removeImage: "Remove image", subscribe: "Follow", subscribed: "Following", unfollowed: "You unfollowed this account.", notificationFollow: "started following you.", notificationPost: "published a new post.", notificationComment: "commented on your post.", notificationMention: "mentioned you.", noNotifications: "You're all caught up.", notificationsLive: "New followers, their posts, comments, and mentions show up here.", savePost: "Save", unsave: "Remove saved post", postImage: "Image attached to post", followingTitle: "Following", logOut: "Sign out", username: "Username", confirmPassword: "Confirm password", resetTitle: "Reset your password", resetCopy: "We'll email you a secure password reset link.", sendReset: "Send reset link", profileNotFound: "We couldn't find an account with that username.", justNow: "now", minutesAgo: "m ago", hoursAgo: "h ago", loginSuccess: "You're signed in.", signOutSuccess: "You've signed out." },
   es: { navFriends: "Amigos", friendsTitle: "Tus amigos", friendsPrompt: "Añade personas que conoces.", addFriend: "Añadir amigo", addFriendsTitle: "Añadir un amigo", addFriendsCopy: "Introduce un nombre y un usuario. La lista se guarda en este navegador.", friendName: "Nombre del amigo", friendHandle: "Nombre de usuario", saveFriend: "Añadir a la lista", noFriends: "Tu lista está vacía por ahora.", noFriendsCopy: "Añade personas que conozcas con su nombre y usuario.", friendAdded: "Amigo añadido a tu lista local.", friendRemoved: "Amigo eliminado de tu lista.", duplicateFriend: "Ese usuario ya está en tu lista.", ownFriend: "No puedes añadirte a ti mismo.", systemLanguage: "Idioma del sistema", friendsDemoNote: "Esta lista solo se guarda en este dispositivo. No busca ni contacta con usuarios reales.", removeFriend: "Eliminar amigo" },
   fr: { navFriends: "Amis", friendsTitle: "Tes amis", friendsPrompt: "Ajoute des personnes que tu connais.", addFriend: "Ajouter un ami", addFriendsTitle: "Ajouter un ami", addFriendsCopy: "Saisis un nom et un identifiant. Cette liste reste dans ce navigateur.", friendName: "Nom de l'ami", friendHandle: "Identifiant", saveFriend: "Ajouter à la liste", noFriends: "Ta liste est vide pour le moment.", noFriendsCopy: "Ajoute les personnes que tu connais avec leur nom et identifiant.", friendAdded: "Ami ajouté à ta liste locale.", friendRemoved: "Ami retiré de ta liste.", duplicateFriend: "Cet identifiant est déjà dans ta liste.", ownFriend: "Tu ne peux pas t'ajouter toi-même.", systemLanguage: "Langue du système", friendsDemoNote: "Cette liste est enregistrée sur cet appareil uniquement. Elle ne recherche ni ne contacte de vrais utilisateurs.", removeFriend: "Supprimer l'ami" },
   de: { navFriends: "Freunde", friendsTitle: "Deine Freunde", friendsPrompt: "Füge Personen hinzu, die du kennst.", addFriend: "Freund hinzufügen", addFriendsTitle: "Freund hinzufügen", addFriendsCopy: "Gib einen Namen und Benutzernamen ein. Die Liste bleibt in diesem Browser.", friendName: "Name des Freundes", friendHandle: "Benutzername", saveFriend: "Zur Liste hinzufügen", noFriends: "Deine Liste ist noch leer.", noFriendsCopy: "Füge Personen, die du kennst, mit Namen und Benutzernamen hinzu.", friendAdded: "Freund zur lokalen Liste hinzugefügt.", friendRemoved: "Freund aus deiner Liste entfernt.", duplicateFriend: "Dieser Benutzername steht bereits auf deiner Liste.", ownFriend: "Du kannst dich nicht selbst hinzufügen.", systemLanguage: "Systemsprache", friendsDemoNote: "Diese Liste wird nur auf diesem Gerät gespeichert. Sie sucht oder kontaktiert keine echten Nutzer.", removeFriend: "Freund entfernen" },
@@ -230,6 +240,7 @@ let friends = loadFriends();
 let currentUser = null;
 let currentProfile = null;
 let followedIds = new Set();
+let followerIds = new Set();
 let currentPostState = { liked: new Set(), saved: new Set() };
 let notificationCount = 0;
 let notificationChannelCleanup = null;
@@ -249,14 +260,30 @@ let profileBannerPreviewUrl = null;
 
 function t(key) {
   const language = activeLanguageCode();
+  if (key === "mondayNote") {
+    return new Intl.DateTimeFormat(language, { weekday: "long", day: "numeric", month: "long" })
+      .format(new Date())
+      .toLocaleUpperCase(language);
+  }
   const value = translations[language]?.[key] ?? additionalTranslations[language]?.[key] ?? authTranslations[language]?.[key] ?? featureTranslations[language]?.[key] ?? translations.en[key] ?? additionalTranslations.en[key] ?? authTranslations.en[key] ?? featureTranslations.en[key] ?? key;
+  if (["exploreTitle", "notificationsTitle", "savedTitle"].includes(key)) {
+    return value.replace(/[.!。]$/, "");
+  }
   return key === "goodMorning" ? value.replace(" <span>☀️</span>", "") : value;
+}
+
+function isMutualFollow(userId) {
+  return followedIds.has(userId) && followerIds.has(userId);
 }
 
 function languageOptionLabel(code) {
   const nativeName = translations[code].languageName;
-  const englishName = englishLanguageNames[code];
-  return `<span class="language-option-copy"><strong>${nativeName}</strong><span aria-hidden="true">/</span><small>${englishName}</small></span>`;
+  const systemCode = systemLanguage();
+  const systemName = new Intl.DisplayNames([systemCode], { type: "language" }).of(code) || nativeName;
+  if (nativeName.toLocaleLowerCase(systemCode) === systemName.toLocaleLowerCase(systemCode)) {
+    return `<span class="language-option-copy"><strong>${nativeName}</strong></span>`;
+  }
+  return `<span class="language-option-copy"><strong>${nativeName}</strong><span aria-hidden="true">/</span><small>${systemName}</small></span>`;
 }
 
 function systemLanguage() {
@@ -427,7 +454,7 @@ function renderStories() {
 
 function getVisibleStories() {
   return friendStoriesOnly
-    ? stories.filter((story) => followedIds.has(story.authorId))
+    ? stories.filter((story) => isMutualFollow(story.authorId))
     : stories;
 }
 
@@ -442,7 +469,8 @@ function mapRemoteStory(row) {
     body: row.body || "",
     imageUrl: row.image_url,
     createdAt: row.created_at,
-    expiresAt: row.expires_at
+    expiresAt: row.expires_at,
+    remote: true
   };
 }
 
@@ -453,10 +481,11 @@ function renderStoryViewer() {
   const image = story.imageUrl
     ? `<img class="story-viewer-image" src="${escapeHtml(story.imageUrl)}" alt="${t("postImage")}"/>`
     : "";
-  const controls = visibleStories.length > 1
-    ? `<div class="story-viewer-nav"><button type="button" data-story-previous ${currentStoryIndex === 0 ? "disabled" : ""}>${t("storyPrevious")}</button><button type="button" data-story-next ${currentStoryIndex === visibleStories.length - 1 ? "disabled" : ""}>${t("storyNext")}</button></div>`
+  const controls = `<div class="story-viewer-nav"><button type="button" data-story-previous>${t("storyPrevious")}</button><button type="button" data-story-next>${t("storyNext")}</button></div>`;
+  const deleteButton = currentUser?.id === story.authorId
+    ? `<button type="button" class="story-delete-button" data-story-delete="${escapeHtml(story.id)}">${icon("trash")}${t("deleteStory")}</button>`
     : "";
-  openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${formatRichText(story.body)}</p>` : ""}${controls}`);
+  openModal(`<span class="modal-kicker">${escapeHtml(story.handle)} · ${escapeHtml(formatPostTime(story.createdAt))}</span><h2 class="modal-title">${escapeHtml(story.authorName)}</h2>${image}${story.body ? `<p class="story-viewer-copy">${formatRichText(story.body)}</p>` : ""}${controls}${deleteButton}`);
 }
 
 function showStoryList() {
@@ -675,8 +704,9 @@ function renderPost(post) {
   const liked = currentPostState.liked.has(post.id) || post.liked;
   const saved = currentPostState.saved.has(post.id) || post.saved;
   const isFollowing = followedIds.has(post.authorId);
+  const relationship = isMutualFollow(post.authorId) ? "friend" : isFollowing ? "subscribed" : "subscribe";
   return `<article class="post-card" data-post-id="${escapeHtml(post.id)}">
-    <header class="post-head"><button class="post-profile-trigger" type="button" ${post.authorId ? `data-post-profile-id="${escapeHtml(post.authorId)}"` : "disabled"} aria-label="${escapeHtml(t("viewProfile").replace("{name}", post.name))}">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span></button>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""}" data-action="follow" aria-label="${t(isFollowing ? "subscribed" : "subscribe")}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(isFollowing ? "subscribed" : "subscribe")}</span></button>` : ""}${canDelete ? `<button class="post-delete-button" data-action="delete" type="button" aria-label="${t("deletePost")}" title="${t("deletePost")}">${icon("trash")}</button>` : ""}</header>
+    <header class="post-head"><button class="post-profile-trigger" type="button" ${post.authorId ? `data-post-profile-id="${escapeHtml(post.authorId)}"` : "disabled"} aria-label="${escapeHtml(t("viewProfile").replace("{name}", post.name))}">${avatarMarkup(post.name, post.avatarClass || "friend-avatar", post.avatarUrl)}<span class="post-author"><strong>${escapeHtml(post.name)}</strong><small>${escapeHtml(post.handle)} · ${escapeHtml(post.time)}</small></span></button>${canFollow ? `<button class="follow-button ${isFollowing ? "is-following" : ""} ${relationship === "friend" ? "is-friend" : ""}" data-action="follow" aria-label="${t(relationship)}" aria-pressed="${isFollowing}">${icon(isFollowing ? "user-check" : "user-plus")}<span>${t(relationship)}</span></button>` : ""}${canDelete ? `<button class="post-delete-button" data-action="delete" type="button" aria-label="${t("deletePost")}" title="${t("deletePost")}">${icon("trash")}</button>` : ""}</header>
     <div class="post-body"><p>${body}</p></div>${art}
     <div class="post-actions"><button class="post-action ${liked ? "is-liked" : ""}" data-action="like" aria-label="${liked ? t("unlike") : t("like")}">${icon("heart")}<span>${post.likes}</span></button><button class="post-action" data-action="comment">${icon("message")}<span>${post.comments} ${t("comments")}</span></button><button class="post-action post-save-action ${saved ? "is-saved" : ""}" data-action="save" aria-label="${saved ? t("unsave") : t("savePost")}">${icon(saved ? "bookmark-fill" : "bookmark")}<span>${t("savePost")}</span></button><button class="post-action share-action" data-action="share">${icon("send")}<span>${t("share")}</span></button></div>
     <form class="post-comment" data-comment-form>${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<textarea name="comment" maxlength="500" rows="1" placeholder="${t("comment")}" aria-label="${t("comment")}"></textarea><button type="submit" aria-label="${t("commentButton")}">${icon("send")}</button></form>
@@ -704,13 +734,14 @@ function showPostAuthorProfile(authorId) {
     avatar_url: authorPost.avatarUrl,
     banner_url: authorPost.bannerUrl
   };
+  const relationship = isMutualFollow(authorId) ? t("friend") : followedIds.has(authorId) ? t("subscribed") : "";
   openModal(`<div class="profile-view profile-public-view">
     <section class="profile-view-card">
       ${profileBannerMarkup(profile.banner_url)}
       <div class="profile-view-content">
         <div class="profile-view-identity">
           ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
-          <div class="profile-view-details"><h2>${escapeHtml(profile.display_name)}</h2><p>@${escapeHtml(profile.handle)}</p></div>
+          <div class="profile-view-details"><h2>${escapeHtml(profile.display_name)}</h2><p>@${escapeHtml(profile.handle)}</p>${relationship ? `<span class="relationship-badge">${escapeHtml(relationship)}</span>` : ""}</div>
         </div>
         <div class="profile-view-stats"><div><strong>${authorPosts.length}</strong><span>${t("profilePostsInFeed")}</span></div></div>
       </div>
@@ -856,9 +887,10 @@ async function refreshBackendData() {
   const generation = ++refreshGeneration;
   try {
     if (currentUser) {
-      const [profile, followIds, savedIds, likedIds] = await Promise.all([
+      const [profile, followIds, followerUserIds, savedIds, likedIds] = await Promise.all([
         window.wallBackend.getProfile(currentUser.id),
         window.wallBackend.getFollowedIds(),
+        window.wallBackend.getFollowerIds(),
         window.wallBackend.getSavedIds(),
         window.wallBackend.getLikedIds()
       ]);
@@ -867,7 +899,8 @@ async function refreshBackendData() {
       state.name = profile.display_name;
       state.handle = `@${profile.handle}`;
       followedIds = new Set(followIds);
-      friends = await window.wallBackend.getFollowingProfiles();
+      followerIds = new Set(followerUserIds);
+      friends = (await window.wallBackend.getFollowingProfiles()).filter((friend) => followerIds.has(friend.id));
       currentPostState = { liked: new Set(likedIds), saved: new Set(savedIds) };
       const [rows, notifications] = await Promise.all([
         window.wallBackend.getPosts({ followingOnly: activeView === "following" }),
@@ -879,6 +912,7 @@ async function refreshBackendData() {
     } else {
       currentProfile = null;
       followedIds = new Set();
+      followerIds = new Set();
       currentPostState = { liked: new Set(), saved: new Set() };
       friends = [];
       posts = (await window.wallBackend.getPosts()).map(mapRemotePost);
@@ -908,6 +942,7 @@ async function handleAuthSession(session, eventName) {
     state.handle = defaults.handle;
     updateIdentityUI();
     followedIds = new Set();
+    followerIds = new Set();
     if (notificationChannelCleanup) notificationChannelCleanup();
     notificationChannelCleanup = null;
     updateAccountButton();
@@ -1417,6 +1452,7 @@ function showAddFriend() {
     const handle = String(new FormData(form).get("handle")).trim().replace(/^@+/, "").toLowerCase();
     if (!handle) return;
     try {
+      let addedAsFriend = false;
       if (window.wallBackend?.configured) {
         if (!currentUser) {
           closeModal();
@@ -1424,8 +1460,15 @@ function showAddFriend() {
           return;
         }
         await window.wallBackend.addFriendByHandle(handle);
-        followedIds = new Set(await window.wallBackend.getFollowedIds());
-        friends = await window.wallBackend.getFollowingProfiles();
+        const [followIds, followerUserIds, followingProfiles] = await Promise.all([
+          window.wallBackend.getFollowedIds(),
+          window.wallBackend.getFollowerIds(),
+          window.wallBackend.getFollowingProfiles()
+        ]);
+        followedIds = new Set(followIds);
+        followerIds = new Set(followerUserIds);
+        friends = followingProfiles.filter((friend) => followerIds.has(friend.id));
+        addedAsFriend = friends.some((friend) => friend.handle.toLowerCase() === handle);
       } else {
         const localHandle = `@${handle}`;
         if (friends.some((friend) => friend.handle.toLowerCase() === localHandle)) return showToast(t("duplicateFriend"));
@@ -1436,7 +1479,7 @@ function showAddFriend() {
       renderNav();
       updateViewTitle();
       closeModal();
-      showToast(t("friendAdded"));
+      showToast(t(addedAsFriend ? "becameFriend" : "friendAdded"));
     } catch (error) {
       document.getElementById("friend-form-error").textContent = error.code === "PGRST116" ? t("profileNotFound") : error.message;
       document.getElementById("friend-form-error").classList.remove("hidden");
@@ -1782,13 +1825,42 @@ document.addEventListener("click", async (event) => {
     renderStoryViewer();
     return;
   }
-  if (event.target.closest("[data-story-previous]") && currentStoryIndex > 0) {
-    currentStoryIndex -= 1;
+  const storyDeleteButton = event.target.closest("[data-story-delete]");
+  if (storyDeleteButton) {
+    const story = stories.find((entry) => entry.id === storyDeleteButton.dataset.storyDelete);
+    if (!currentUser || !story || story.authorId !== currentUser.id) return;
+    if (!window.confirm(t("deleteStoryConfirm"))) return;
+    storyDeleteButton.disabled = true;
+    try {
+      let imageCleanupFailed = false;
+      if (story.remote) ({ imageCleanupFailed } = await window.wallBackend.deleteStory(story.id));
+      stories = stories.filter((entry) => entry.id !== story.id);
+      const visibleStories = getVisibleStories();
+      if (visibleStories.length) {
+        currentStoryIndex = Math.min(currentStoryIndex, visibleStories.length - 1);
+        renderStoryViewer();
+      } else {
+        closeModal();
+      }
+      renderStories();
+      showToast(t(imageCleanupFailed ? "storyDeletedImageWarning" : "storyDeleted"));
+    } catch (error) {
+      storyDeleteButton.disabled = false;
+      showDataError(error);
+    }
+    return;
+  }
+  if (event.target.closest("[data-story-previous]")) {
+    const storyCount = getVisibleStories().length;
+    if (!storyCount) return closeModal();
+    currentStoryIndex = (currentStoryIndex - 1 + storyCount) % storyCount;
     renderStoryViewer();
     return;
   }
-  if (event.target.closest("[data-story-next]") && currentStoryIndex < getVisibleStories().length - 1) {
-    currentStoryIndex += 1;
+  if (event.target.closest("[data-story-next]")) {
+    const storyCount = getVisibleStories().length;
+    if (!storyCount) return closeModal();
+    currentStoryIndex = (currentStoryIndex + 1) % storyCount;
     renderStoryViewer();
     return;
   }
@@ -1922,10 +1994,10 @@ document.addEventListener("click", async (event) => {
         await window.wallBackend.toggleFollow(post.authorId, !following);
         if (following) followedIds.delete(post.authorId);
         else followedIds.add(post.authorId);
-        friends = await window.wallBackend.getFollowingProfiles();
+        friends = (await window.wallBackend.getFollowingProfiles()).filter((friend) => followerIds.has(friend.id));
         renderPosts();
         renderStories();
-        showToast(t(following ? "unfollowed" : "subscribed"));
+        showToast(t(following ? "unfollowed" : isMutualFollow(post.authorId) ? "becameFriend" : "subscribed"));
       } catch (error) {
         if (!currentUser) showLogin();
         else showDataError(error);

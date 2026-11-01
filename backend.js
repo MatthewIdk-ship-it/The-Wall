@@ -136,6 +136,48 @@
       if (error) throw error;
       return data;
     },
+    async deleteStory(storyId) {
+      const api = requireClient();
+      const { data: authData, error: authError } = await api.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("Conectează-te pentru a șterge povești.");
+      const { data, error } = await api.from("stories")
+        .delete()
+        .eq("id", storyId)
+        .eq("author_id", authData.user.id)
+        .select("image_url")
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error("Povestea nu există sau nu îți aparține.");
+
+      let imageCleanupFailed = false;
+      if (data.image_url) {
+        try {
+          const imageUrl = new URL(data.image_url);
+          const prefix = "/storage/v1/object/public/post-images/";
+          const encodedPath = imageUrl.pathname.startsWith(prefix) ? imageUrl.pathname.slice(prefix.length) : "";
+          const [ownerId, encodedFileName, ...extraPath] = encodedPath.split("/");
+          if (imageUrl.origin !== new URL(config.supabaseUrl).origin
+            || ownerId !== authData.user.id
+            || !encodedFileName
+            || extraPath.length) {
+            imageCleanupFailed = true;
+            console.warn("The story was deleted, but its image URL was not a recognized owned storage object.");
+          } else {
+            const storagePath = `${ownerId}/${decodeURIComponent(encodedFileName)}`;
+            const { error: cleanupError } = await api.storage.from("post-images").remove([storagePath]);
+            if (cleanupError) {
+              imageCleanupFailed = true;
+              console.error("The story was deleted, but its image could not be removed.", cleanupError);
+            }
+          }
+        } catch (cleanupError) {
+          imageCleanupFailed = true;
+          console.error("The story was deleted, but its image could not be removed.", cleanupError);
+        }
+      }
+      return { imageCleanupFailed };
+    },
     async publishStory({ body, image }) {
       const api = requireClient();
       const { data: authData, error: authError } = await api.auth.getUser();
@@ -286,6 +328,15 @@
       const { data, error } = await api.from("follows").select("followed_id").eq("follower_id", authData.user.id);
       if (error) throw error;
       return data.map((entry) => entry.followed_id);
+    },
+    async getFollowerIds() {
+      const api = requireClient();
+      const { data: authData, error: authError } = await api.auth.getUser();
+      if (authError) throw authError;
+      if (!authData.user) return [];
+      const { data, error } = await api.from("follows").select("follower_id").eq("followed_id", authData.user.id);
+      if (error) throw error;
+      return data.map((entry) => entry.follower_id);
     },
     async getFollowingProfiles() {
       const api = requireClient();
