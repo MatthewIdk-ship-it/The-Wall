@@ -239,7 +239,7 @@ function t(key) {
 function languageOptionLabel(code) {
   const nativeName = translations[code].languageName;
   const englishName = englishLanguageNames[code];
-  return `<span class="language-option-copy"><strong>${nativeName}</strong>${nativeName === englishName ? "" : `<small>${englishName}</small>`}</span>`;
+  return `<span class="language-option-copy"><strong>${nativeName}</strong><small>${englishName}</small></span>`;
 }
 
 function systemLanguage() {
