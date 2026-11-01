@@ -15,11 +15,11 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261101-22" />
+    <link rel="stylesheet" href="styles.css?v=20261101-23" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js" defer></script>
     <script src="backend.js" defer></script>
-    <script src="app.js?v=20261101-19" defer></script>
+    <script src="app.js?v=20261101-20" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -44,7 +44,7 @@
         </nav>
 
         <div class="rail-spacer"></div>
-        <div class="sidebar-note"><span class="note-dot"></span><span data-i18n="quietCorner">Colțul tău liniștit de pe internet.</span></div>
+        <div class="sidebar-note"><span data-i18n="quietCorner">Colțul tău liniștit de pe internet.</span></div>
       </aside>
 
       <main class="main-column">
@@ -63,7 +63,7 @@
         </section>
 
         <section class="feed-section">
-          <div class="feed-heading"><div><span class="eyebrow" data-i18n="yourCircle">CERCUL TĂU</span><h2 id="feed-title" data-i18n="latest">Cele mai noi</h2></div><button class="feed-filter" id="feed-filter"><svg class="icon"><use href="icons.svg#i-sparkle"/></svg><span data-i18n="forYou">Pentru tine</span><svg class="icon feed-filter-chevron"><use href="icons.svg#i-chevron-down"/></svg></button></div>
+          <div class="feed-heading"><div><span class="eyebrow" data-i18n="yourCircle">CERCUL TĂU</span><h2 id="feed-title" data-i18n="latest">Cele mai noi</h2></div><button class="feed-filter" id="feed-filter"><span data-i18n="forYou">Pentru tine</span><svg class="icon feed-filter-chevron"><use href="icons.svg#i-chevron-down"/></svg></button></div>
 
           <article class="composer-card">
             <form class="feed-composer-form" id="feed-composer-form">
@@ -78,7 +78,7 @@
                 <div class="composer-tools">
                   <label class="composer-tool" for="image-input"><svg class="icon"><use href="icons.svg#i-image"/></svg><span data-i18n="addPhoto">Adaugă o fotografie</span></label>
                   <input id="image-input" class="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
-                  <span class="composer-hint"><svg class="icon"><use href="icons.svg#i-sparkle"/></svg><span data-i18n="mentionHint">Folosește @ pentru a menționa.</span></span>
+                  <span class="composer-hint"><span data-i18n="mentionHint">Folosește @ pentru a menționa.</span></span>
                 </div>
                       <button class="button button-dark button-small" id="composer-submit" type="submit"><span data-i18n="post">Postează</span><svg class="icon"><use href="icons.svg#i-arrow"/></svg></button>
               </div>
@@ -87,7 +87,7 @@
 
           <div class="post-list" id="post-list" aria-live="polite"></div>
           <div class="empty-state hidden" id="empty-state"><span class="empty-icon"><svg class="icon"><use href="icons.svg#i-search"/></svg></span><h3 data-i18n="nothingHere">N-am găsit nimic aici.</h3><p data-i18n="tryAnotherSearch">Încearcă un alt cuvânt sau explorează postările noi.</p><button class="button button-dark button-small" id="clear-search" data-i18n="clearSearch">Șterge căutarea</button></div>
-          <button class="load-more" id="load-more" data-i18n="youreAllCaughtUp">Ai ajuns la zi <span>✳</span></button>
+          <button class="load-more" id="load-more" data-i18n="youreAllCaughtUp">Ai ajuns la zi</button>
         </section>
         <button class="button button-dark desktop-compose-bottom" id="desktop-compose"><svg class="icon"><use href="icons.svg#i-plus"/></svg><span data-i18n="writePost">Scrie o postare</span></button>
       </main>
@@ -96,7 +96,7 @@
         <div class="right-top"><button class="icon-button" id="theme-quick" aria-label="Change theme"><svg class="icon"><use href="icons.svg#i-sun"/></svg></button><button class="login-button" id="open-login" data-i18n="logIn">Conectare</button></div>
 
         <section class="welcome-card">
-          <span class="welcome-label"><svg class="icon"><use href="icons.svg#i-sparkle"/></svg><span data-i18n="aLittleReminder">UN MIC REMINDER</span></span>
+          <span class="welcome-label"><span data-i18n="aLittleReminder">UN MIC REMINDER</span></span>
           <h2 data-i18n="welcomeHeadline">Nu trebuie<br/>să ai totul<br/><em>rezolvat.</em></h2>
           <p data-i18n="welcomeCopy">E suficient să fii aici, exact așa cum ești.</p>
           <span class="welcome-signature">the wall<span>.</span></span>

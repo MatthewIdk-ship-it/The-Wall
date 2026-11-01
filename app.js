@@ -475,7 +475,7 @@ function showStoryComposer() {
   }
   selectedStoryImage = null;
   selectedStoryMode = "text";
-  openModal(`<span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${t("addStory")}</h2><p class="modal-copy">${t("storyPublished")}</p><form class="form-stack" id="story-form">
+  openModal(`<span class="modal-kicker">THE WALL</span><h2 class="modal-title">${t("addStory")}</h2><p class="modal-copy">${t("storyPublished")}</p><form class="form-stack" id="story-form">
     <div class="story-mode-options" role="group" aria-label="${t("addStory")}">
       <button type="button" class="is-selected" data-story-mode="text" aria-pressed="true">${t("storyTextMode")}</button>
       <button type="button" data-story-mode="photo" aria-pressed="false">${t("storyPhotoMode")}</button>
@@ -727,7 +727,7 @@ function updateViewTitle() {
   if (activeView === "following") title.textContent = t("followingTitle");
   if (activeView === "saved") title.textContent = t("savedTitle");
   if (activeView === "notifications") title.textContent = t("notificationsTitle");
-  document.getElementById("page-title").innerHTML = activeView === "home" ? t("goodMorning") : `${escapeHtml(title.textContent)} <span>✳</span>`;
+  document.getElementById("page-title").innerHTML = activeView === "home" ? t("goodMorning") : escapeHtml(title.textContent);
   const feedFilter = document.getElementById("feed-filter");
   feedFilter.classList.toggle("hidden", !["home", "following"].includes(activeView));
   feedFilter.querySelector("[data-i18n]").textContent = t(activeView === "following" ? "forYou" : "followingTitle");
@@ -973,7 +973,7 @@ function showProfile() {
           <h2 class="modal-title">${t("viewAccount")}</h2>
           <p class="modal-copy">${t("guestProfileCopy")}</p>
           <div class="profile-view-actions">
-            <button class="button button-dark" id="guest-profile-signup" type="button">${icon("sparkle")}${t("guestSignupCta")}</button>
+            <button class="button button-dark" id="guest-profile-signup" type="button">${t("guestSignupCta")}</button>
             <button class="profile-action-secondary" id="guest-profile-login" type="button">${icon("user-check")}${t("logIn")}</button>
           </div>
         </div>
@@ -1090,7 +1090,7 @@ function showLogin(signup = false, reset = false) {
   const submitText = reset ? t("sendReset") : signup ? t("createAccount") : t("continue");
   const note = window.wallBackend?.configured ? t("authBackendWarning") : t("authConfigMissing");
   const form = `<form class="form-stack" id="auth-form" data-mode="${formMode}" novalidate>${signup ? authField(t("fullName"), "name", "text", "name", "Guest", 'required maxlength="48"') : ""}${emailField}${passwordFields}<span class="form-error hidden" id="auth-form-error" role="alert"></span><button class="button button-dark" type="submit">${submitText} ${icon("arrow")}</button></form>`;
-  openModal(`<div class="auth-panel"><span class="modal-kicker">${icon("sparkle")} THE WALL</span><h2 class="modal-title">${title}</h2><p class="modal-copy">${description}</p>${form}<div class="${window.wallBackend?.configured ? "demo-warning" : "connection-warning"}">${icon(window.wallBackend?.configured ? "check" : "settings")}<span>${note}</span></div>
+  openModal(`<div class="auth-panel"><span class="modal-kicker">THE WALL</span><h2 class="modal-title">${title}</h2><p class="modal-copy">${description}</p>${form}<div class="${window.wallBackend?.configured ? "demo-warning" : "connection-warning"}">${icon(window.wallBackend?.configured ? "check" : "settings")}<span>${note}</span></div>
     ${!signup && !reset ? `<button class="modal-switch" id="reset-auth">${t("resetPassword")}</button>` : ""}
     ${!reset ? `<button class="modal-switch" id="switch-auth">${signup ? t("haveAccount") : t("noAccount")} <strong>${signup ? t("logInLink") : t("createAccount")}</strong></button>` : `<button class="modal-switch" id="switch-auth"><strong>${t("logInLink")}</strong></button>`}</div>`, "auth");
   const formElement = document.getElementById("auth-form");
