@@ -51,7 +51,8 @@ const featureTranslations = {
     accountCopy: "Editează numele afișat, fotografia de profil și bannerul.",
     viewAccount: "Vezi contul",
     accountViewCopy: "Informațiile profilului tău și opțiunile contului.",
-    guestProfileCopy: "Conectează-te pentru a-ți personaliza profilul, a publica povești și a interacționa cu comunitatea.",
+    guestProfileCopy: "Creează-ți un cont pentru a-ți personaliza profilul, a publica povești și a te conecta cu comunitatea.",
+    guestSignupCta: "Înscrie-te pe The Wall",
     editAccount: "Editează contul",
     signOutAccount: "Deconectează-te",
     displayName: "Nume afișat",
@@ -102,7 +103,8 @@ const featureTranslations = {
     accountCopy: "Update your display name, profile photo, and banner.",
     viewAccount: "View account",
     accountViewCopy: "Your profile information and account options.",
-    guestProfileCopy: "Sign in to personalize your profile, share stories, and connect with the community.",
+    guestProfileCopy: "Create an account to personalize your profile, share stories, and connect with the community.",
+    guestSignupCta: "Join The Wall",
     editAccount: "Edit account",
     signOutAccount: "Sign out",
     displayName: "Display name",
@@ -934,8 +936,8 @@ function showProfile() {
           <h2 class="modal-title">${t("viewAccount")}</h2>
           <p class="modal-copy">${t("guestProfileCopy")}</p>
           <div class="profile-view-actions">
-            <button class="button button-dark" id="guest-profile-login" type="button">${icon("user-check")}${t("continue")}</button>
-            <button class="profile-sign-out" id="guest-profile-signup" type="button">${icon("user-plus")}${t("createAccount")}</button>
+            <button class="button button-dark" id="guest-profile-signup" type="button">${icon("sparkle")}${t("guestSignupCta")}</button>
+            <button class="profile-action-secondary" id="guest-profile-login" type="button">${icon("user-check")}${t("logIn")}</button>
           </div>
         </div>
       </section>
@@ -968,7 +970,7 @@ function showProfile() {
     </section>
     <div class="profile-view-actions">
       <button class="button button-dark" id="profile-edit-account" type="button">${icon("settings")}${t("editAccount")}</button>
-      <button class="button profile-sign-out" id="profile-sign-out" type="button">${icon("close")}${t("signOutAccount")}</button>
+      <button class="button profile-action-secondary" id="profile-sign-out" type="button">${icon("close")}${t("signOutAccount")}</button>
     </div>
   </div>`, "profile");
   document.getElementById("profile-edit-account").addEventListener("click", () => showSettings("account"));
