@@ -59,38 +59,47 @@
       if (error) throw error;
     },
     async getProfile(userId) {
-      const { data, error } = await requireClient().from("profiles").select("id, display_name, handle, avatar_url").eq("id", userId).single();
+      const { data, error } = await requireClient().from("profiles").select("id, display_name, handle, avatar_url, banner_url").eq("id", userId).single();
       if (error) throw error;
       return data;
     },
-    async updateProfile({ userId, name, handle, image, updateHandle = false }) {
+    async updateProfile({ userId, name, handle, image, bannerImage, updateHandle = false }) {
       const api = requireClient();
       const normalizedHandle = normalizeHandle(handle);
+      if (bannerImage && bannerImage.type !== "image/jpeg") throw new Error("Profile banners must be JPG images.");
+      if (bannerImage && bannerImage.size > 10 * 1024 * 1024) throw new Error("Profile banners must be 10 MB or smaller.");
       let avatarUrl = null;
-      let uploadedPath = null;
-      if (image) {
-        const extension = image.name.split(".").pop().toLowerCase();
-        uploadedPath = `${userId}/${crypto.randomUUID()}.${extension}`;
-        const { error: uploadError } = await api.storage.from("post-images").upload(uploadedPath, image, { contentType: image.type, upsert: false });
-        if (uploadError) throw uploadError;
-        avatarUrl = api.storage.from("post-images").getPublicUrl(uploadedPath).data.publicUrl;
-      }
-      const updates = { display_name: name };
-      if (updateHandle) updates.handle = normalizedHandle;
-      if (avatarUrl) updates.avatar_url = avatarUrl;
-      const { error } = await api.from("profiles").update(updates).eq("id", userId);
-      if (error) {
-        if (uploadedPath) {
-          const { error: cleanupError } = await api.storage.from("post-images").remove([uploadedPath]);
-          if (cleanupError) console.error("Unable to clean up the uploaded profile image.", cleanupError);
+      let bannerUrl = null;
+      const uploadedPaths = [];
+      const uploadProfileImage = async (file) => {
+        const extension = file.name.split(".").pop().toLowerCase();
+        const path = `${userId}/${crypto.randomUUID()}.${extension}`;
+        const { error } = await api.storage.from("post-images").upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw error;
+        uploadedPaths.push(path);
+        return api.storage.from("post-images").getPublicUrl(path).data.publicUrl;
+      };
+      try {
+        if (image) avatarUrl = await uploadProfileImage(image);
+        if (bannerImage) bannerUrl = await uploadProfileImage(bannerImage);
+        const updates = { display_name: name };
+        if (updateHandle) updates.handle = normalizedHandle;
+        if (avatarUrl) updates.avatar_url = avatarUrl;
+        if (bannerUrl) updates.banner_url = bannerUrl;
+        const { error } = await api.from("profiles").update(updates).eq("id", userId);
+        if (error) throw error;
+      } catch (error) {
+        if (uploadedPaths.length) {
+          const { error: cleanupError } = await api.storage.from("post-images").remove(uploadedPaths);
+          if (cleanupError) console.error("Unable to clean up uploaded profile images.", cleanupError);
         }
         throw error;
       }
-      return avatarUrl;
+      return { avatarUrl, bannerUrl };
     },
     async getPosts({ followingOnly = false } = {}) {
       const api = requireClient();
-      let query = api.from("posts").select("id, author_id, body, image_url, created_at, profiles:profiles!posts_author_id_fkey(id, display_name, handle, avatar_url), comments(id, body, created_at, profiles:profiles!comments_author_id_fkey(id, display_name, handle)), post_likes(user_id)").order("created_at", { ascending: false }).limit(50);
+      let query = api.from("posts").select("id, author_id, body, image_url, created_at, profiles:profiles!posts_author_id_fkey(id, display_name, handle, avatar_url, banner_url), comments(id, body, created_at, profiles:profiles!comments_author_id_fkey(id, display_name, handle)), post_likes(user_id)").order("created_at", { ascending: false }).limit(50);
       if (followingOnly) {
         const { data: authData, error: authError } = await api.auth.getUser();
         if (authError) throw authError;

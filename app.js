@@ -48,7 +48,7 @@ const featureTranslations = {
     accountTab: "Cont",
     appearanceTab: "Aspect",
     languageTab: "Limbă",
-    accountCopy: "Editează numele afișat și fotografia de profil.",
+    accountCopy: "Editează numele afișat, fotografia de profil și bannerul.",
     viewAccount: "Vezi contul",
     accountViewCopy: "Informațiile profilului tău și opțiunile contului.",
     guestProfileCopy: "Conectează-te pentru a-ți personaliza profilul, a publica povești și a interacționa cu comunitatea.",
@@ -56,6 +56,8 @@ const featureTranslations = {
     signOutAccount: "Deconectează-te",
     displayName: "Nume afișat",
     profilePhoto: "Fotografie de profil",
+    profileBanner: "Banner de profil (JPG)",
+    bannerImageOnly: "Alege o imagine JPG pentru bannerul de profil.",
     saveProfile: "Salvează profilul",
     profileSaved: "Profilul a fost actualizat.",
     profileSaveError: "Nu am putut actualiza profilul.",
@@ -97,7 +99,7 @@ const featureTranslations = {
     accountTab: "Account",
     appearanceTab: "Appearance",
     languageTab: "Language",
-    accountCopy: "Update your display name and profile photo.",
+    accountCopy: "Update your display name, profile photo, and banner.",
     viewAccount: "View account",
     accountViewCopy: "Your profile information and account options.",
     guestProfileCopy: "Sign in to personalize your profile, share stories, and connect with the community.",
@@ -105,6 +107,8 @@ const featureTranslations = {
     signOutAccount: "Sign out",
     displayName: "Display name",
     profilePhoto: "Profile photo",
+    profileBanner: "Profile banner (JPG)",
+    bannerImageOnly: "Choose a JPG image for your profile banner.",
     saveProfile: "Save profile",
     profileSaved: "Your profile has been updated.",
     profileSaveError: "We couldn't update your profile.",
@@ -220,6 +224,7 @@ let storySchemaWarningShown = false;
 let activeView = "home";
 let toastTimer;
 let profileImagePreviewUrl = null;
+let profileBannerPreviewUrl = null;
 
 function t(key) {
   const language = activeLanguageCode();
@@ -350,6 +355,10 @@ function avatarMarkup(name, className, avatarUrl = null) {
     ? `<img src="${escapeHtml(avatarUrl)}" alt="" loading="lazy"/>`
     : escapeHtml(String(name || "G").slice(0, 1).toUpperCase());
   return `<span class="avatar ${escapeHtml(className)}">${content}</span>`;
+}
+
+function profileBannerMarkup(bannerUrl) {
+  return `<div class="profile-hero-banner">${bannerUrl ? `<img class="profile-banner-image" src="${escapeHtml(bannerUrl)}" alt="" />` : ""}<span>THE WALL</span></div>`;
 }
 
 function renderTrends() {
@@ -653,11 +662,12 @@ function showPostAuthorProfile(authorId) {
   const profile = {
     display_name: authorPost.name,
     handle: String(authorPost.handle || "").replace(/^@/, ""),
-    avatar_url: authorPost.avatarUrl
+    avatar_url: authorPost.avatarUrl,
+    banner_url: authorPost.bannerUrl
   };
   openModal(`<div class="profile-view profile-public-view">
     <section class="profile-view-card">
-      <div class="profile-hero-banner"><span>${icon("sparkle")} THE WALL</span><span class="profile-hero-orbit" aria-hidden="true">✳</span></div>
+      ${profileBannerMarkup(profile.banner_url)}
       <div class="profile-view-content">
         <div class="profile-view-identity">
           ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
@@ -783,6 +793,7 @@ function mapRemotePost(row) {
     avatar: authorName.slice(0, 1).toUpperCase(),
     avatarClass: "friend-avatar",
     avatarUrl: author.avatar_url,
+    bannerUrl: author.banner_url,
     time: formatPostTime(row.created_at),
     body: row.body || "",
     imageUrl: row.image_url,
@@ -906,13 +917,17 @@ function closeModal() {
     URL.revokeObjectURL(profileImagePreviewUrl);
     profileImagePreviewUrl = null;
   }
+  if (profileBannerPreviewUrl) {
+    URL.revokeObjectURL(profileBannerPreviewUrl);
+    profileBannerPreviewUrl = null;
+  }
 }
 
 function showProfile() {
   if (!currentUser) {
     openModal(`<div class="profile-view profile-guest-view">
       <section class="profile-guest-card">
-        <div class="profile-guest-cover"><span>${icon("sparkle")} THE WALL</span></div>
+        <div class="profile-guest-cover"><span>THE WALL</span></div>
         <div class="profile-guest-body">
           ${avatarMarkup(state.name, "profile-view-avatar")}
           <span class="modal-kicker">${icon("users")} ${t("profile")}</span>
@@ -932,12 +947,13 @@ function showProfile() {
   const profile = currentProfile || {
     display_name: state.name,
     handle: state.handle.replace(/^@/, ""),
-    avatar_url: null
+    avatar_url: null,
+    banner_url: null
   };
   const recentPosts = posts.filter((post) => post.authorId === currentUser.id).length;
   openModal(`<div class="profile-view">
     <section class="profile-view-card">
-      <div class="profile-hero-banner"><span>${icon("sparkle")} THE WALL</span><span class="profile-hero-orbit" aria-hidden="true">✳</span></div>
+      ${profileBannerMarkup(profile.banner_url)}
       <div class="profile-view-content">
         <div class="profile-view-identity">
           ${avatarMarkup(profile.display_name, "profile-view-avatar", profile.avatar_url)}
@@ -1030,7 +1046,7 @@ function showLogin(signup = false, reset = false) {
   const description = reset ? t("resetCopy") : signup ? t("signupCopy") : t("loginCopy");
   const emailField = authField(t("email"), "email", "email", "email", "guest@example.com", 'required maxlength="254"');
   const passwordFields = signup
-    ? `${authField(t("username"), "handle", "text", "username", "guest", 'required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}"')}<small class="field-hint">${t("usernameHint")}</small> ${authPasswordField(t("password"), "password", "new-password", t("passwordHint"), 'required minlength="8" maxlength="72"', true)} ${authPasswordField(t("confirmPassword"), "confirmPassword", "new-password", "••••••••", 'required minlength="8" maxlength="72"')}`
+    ? `${authField(t("username"), "handle", "text", "username", "guest", 'required minlength="3" maxlength="32" pattern="[A-Za-z0-9._\\-]{3,32}"')}<small class="field-hint">${t("usernameHint")}</small> ${authPasswordField(t("password"), "password", "new-password", t("passwordHint"), 'required minlength="8" maxlength="72"', true)} ${authPasswordField(t("confirmPassword"), "confirmPassword", "new-password", "••••••••", 'required minlength="8" maxlength="72"')}`
     : reset ? "" : authPasswordField(t("password"), "password", "current-password", "••••••••", 'required maxlength="72"', true);
   const submitText = reset ? t("sendReset") : signup ? t("createAccount") : t("continue");
   const note = window.wallBackend?.configured ? t("authBackendWarning") : t("authConfigMissing");
@@ -1139,7 +1155,7 @@ function showSettings(activeTab = "account") {
   ];
   const languages = Object.keys(translations);
   const accountPane = currentUser
-    ? `<form class="settings-account-form" id="settings-account-form"><div class="settings-profile-photo">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<label class="button button-small settings-photo-button">${t("profilePhoto")}<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label></div><label class="form-field">${t("displayName")}<input name="displayName" type="text" maxlength="48" required value="${escapeHtml(currentProfile?.display_name || state.name)}"/></label><label class="form-field">${t("currentHandle")}<input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]{3,32}" required value="${escapeHtml(currentProfile?.handle || "")}" aria-describedby="settings-username-hint"/><span class="field-error hidden" data-error-for="handle"></span></label><small class="field-hint" id="settings-username-hint">${t("usernameHint")}</small><span class="form-error hidden" id="settings-profile-error" role="alert"></span><button class="button button-dark" type="submit">${t("saveProfile")}</button></form>`
+    ? `<form class="settings-account-form" id="settings-account-form"><div class="settings-profile-photo">${avatarMarkup(state.name, "avatar-you", currentProfile?.avatar_url)}<label class="button button-small settings-photo-button">${t("profilePhoto")}<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/gif"/></label></div><div class="settings-profile-banner"><div class="settings-profile-banner-preview" id="settings-profile-banner-preview">${currentProfile?.banner_url ? `<img src="${escapeHtml(currentProfile.banner_url)}" alt=""/>` : ""}</div><label class="button button-small settings-banner-button">${t("profileBanner")}<input name="banner" type="file" accept="image/jpeg,.jpg,.jpeg"/></label></div><label class="form-field">${t("displayName")}<input name="displayName" type="text" maxlength="48" required value="${escapeHtml(currentProfile?.display_name || state.name)}"/></label><label class="form-field">${t("currentHandle")}<input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._\\-]{3,32}" required value="${escapeHtml(currentProfile?.handle || "")}" aria-describedby="settings-username-hint"/><span class="field-error hidden" data-error-for="handle"></span></label><small class="field-hint" id="settings-username-hint">${t("usernameHint")}</small><span class="form-error hidden" id="settings-profile-error" role="alert"></span><button class="button button-dark" type="submit">${t("saveProfile")}</button></form>`
     : `<p class="settings-account-prompt">${t("signInToEditProfile")}</p><button class="button button-dark" id="settings-login" type="button">${t("logIn")}</button>`;
   openModal(`<div class="settings-layout">
     <header class="settings-header"><span class="modal-kicker">${icon("settings")} THE WALL</span><h2 class="modal-title">${t("settingsTitle")}</h2><p class="modal-copy">${t("settingsCopy")}</p></header>
@@ -1171,6 +1187,13 @@ function showSettings(activeTab = "account") {
   document.getElementById("settings-login")?.addEventListener("click", () => showLogin(false));
   const form = document.getElementById("settings-account-form");
   const avatarInput = form?.elements.namedItem("avatar");
+  const bannerInput = form?.elements.namedItem("banner");
+  const bannerPreview = document.getElementById("settings-profile-banner-preview");
+  const restoreBannerPreview = () => {
+    if (profileBannerPreviewUrl) URL.revokeObjectURL(profileBannerPreviewUrl);
+    profileBannerPreviewUrl = null;
+    bannerPreview.innerHTML = currentProfile?.banner_url ? `<img src="${escapeHtml(currentProfile.banner_url)}" alt=""/>` : "";
+  };
   avatarInput?.addEventListener("change", () => {
     const image = avatarInput.files?.[0];
     const error = document.getElementById("settings-profile-error");
@@ -1191,6 +1214,29 @@ function showSettings(activeTab = "account") {
     const avatar = form.querySelector(".settings-profile-photo .avatar");
     avatar.innerHTML = `<img src="${escapeHtml(profileImagePreviewUrl)}" alt="${escapeHtml(t("imageSelected"))}"/>`;
   });
+  bannerInput?.addEventListener("change", () => {
+    const image = bannerInput.files?.[0];
+    const error = document.getElementById("settings-profile-error");
+    if (!image) return;
+    if (image.type !== "image/jpeg") {
+      bannerInput.value = "";
+      restoreBannerPreview();
+      error.textContent = t("bannerImageOnly");
+      error.classList.remove("hidden");
+      return;
+    }
+    if (image.size > 10 * 1024 * 1024) {
+      bannerInput.value = "";
+      restoreBannerPreview();
+      error.textContent = t("imageTooLarge");
+      error.classList.remove("hidden");
+      return;
+    }
+    error.classList.add("hidden");
+    if (profileBannerPreviewUrl) URL.revokeObjectURL(profileBannerPreviewUrl);
+    profileBannerPreviewUrl = URL.createObjectURL(image);
+    bannerPreview.innerHTML = `<img src="${escapeHtml(profileBannerPreviewUrl)}" alt="${escapeHtml(t("imageSelected"))}"/>`;
+  });
   form?.elements.namedItem("handle")?.addEventListener("input", (event) => {
     const input = event.currentTarget;
     setAuthError(form, "handle", input.value && !USERNAME_PATTERN.test(input.value) ? t("invalidUsername") : "");
@@ -1202,6 +1248,7 @@ function showSettings(activeTab = "account") {
     const name = String(data.get("displayName") || "").trim();
     const handle = String(data.get("handle") || "").trim().toLowerCase();
     const image = data.get("avatar");
+    const bannerImage = data.get("banner");
     const error = document.getElementById("settings-profile-error");
     setAuthError(form, "handle", "");
     if (!name) {
@@ -1223,20 +1270,43 @@ function showSettings(activeTab = "account") {
       error.classList.remove("hidden");
       return;
     }
+    if (bannerImage instanceof File && bannerImage.size > 0 && bannerImage.type !== "image/jpeg") {
+      error.textContent = t("bannerImageOnly");
+      error.classList.remove("hidden");
+      return;
+    }
+    if (bannerImage instanceof File && bannerImage.size > 10 * 1024 * 1024) {
+      error.textContent = t("imageTooLarge");
+      error.classList.remove("hidden");
+      return;
+    }
     const submit = form.querySelector('[type="submit"]');
     submit.disabled = true;
     try {
-      const avatarUrl = await window.wallBackend.updateProfile({
+      const { avatarUrl, bannerUrl } = await window.wallBackend.updateProfile({
         userId: currentUser.id,
         name,
         handle,
         updateHandle: handle !== currentProfile?.handle,
-        image: image instanceof File && image.size ? image : null
+        image: image instanceof File && image.size ? image : null,
+        bannerImage: bannerImage instanceof File && bannerImage.size ? bannerImage : null
       });
-      currentProfile = { ...currentProfile, display_name: name, handle, avatar_url: avatarUrl || currentProfile.avatar_url };
+      currentProfile = {
+        ...currentProfile,
+        display_name: name,
+        handle,
+        avatar_url: avatarUrl || currentProfile.avatar_url,
+        banner_url: bannerUrl || currentProfile.banner_url
+      };
       state.name = name;
       state.handle = `@${handle}`;
-      posts = posts.map((post) => post.authorId === currentUser.id ? { ...post, handle: state.handle } : post);
+      posts = posts.map((post) => post.authorId === currentUser.id ? {
+        ...post,
+        name,
+        handle: state.handle,
+        avatarUrl: currentProfile.avatar_url,
+        bannerUrl: currentProfile.banner_url
+      } : post);
       stories = stories.map((story) => story.authorId === currentUser.id ? { ...story, authorName: name, handle: state.handle, avatarUrl: currentProfile.avatar_url } : story);
       updateIdentityUI();
       renderPosts();
